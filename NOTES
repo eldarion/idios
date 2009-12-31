@@ -1,0 +1,21 @@
+Notes on idios
+==============
+
+
+Projects using basic_profiles typically add the following to settings:
+
+    ABSOLUTE_URL_OVERRIDES = {
+        "auth.user": lambda o: "/profiles/profile/%s/" % o.username,
+    }
+    AUTH_PROFILE_MODULE = 'basic_profiles.Profile'
+
+It would be nice if the URL path wasn't hardcoded there, duplicating what's in
+urls.py
+
+
+
+Autocompleting user selection uses the separate autocomplete_app.
+basic_profiles actually added these lines to urls.py:
+
+url(r'^username_autocomplete/$', 'autocomplete_app.views.username_autocomplete_friends', name='profile_username_autocomplete'),
+url(r'^username_autocomplete/$', 'autocomplete_app.views.username_autocomplete_all', name='profile_username_autocomplete'),
