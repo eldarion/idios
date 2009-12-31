@@ -12,8 +12,6 @@ setup(
     url = "http://github.com/eldarion/idios",
     packages = [
         "idios",
-        "idios.management",
-        "idios.management.commands",
         "idios.templatetags",
         "idios.tests",
     ],

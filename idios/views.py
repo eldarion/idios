@@ -9,8 +9,7 @@ from django.utils.translation import ugettext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
-from idios.forms import ProfileForm
-from idios.models import Profile
+from idios.utils import get_profile_form
 
 
 
@@ -63,9 +62,13 @@ def profile(request, username, template_name="idios/profile.html"):
 
 
 @login_required
-def profile_edit(request, form_class=ProfileForm, **kwargs):
+def profile_edit(request, **kwargs):
     
     template_name = kwargs.get("template_name", "idios/profile_edit.html")
+    form_class = kwargs.get("form_class")
+    
+    if form_class is None:
+        form_class = get_profile_form()
     
     if request.is_ajax():
         template_name = kwargs.get(
