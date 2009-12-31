@@ -9,7 +9,7 @@ Projects using basic_profiles typically add the following to settings:
     }
     AUTH_PROFILE_MODULE = "basic_profiles.Profile"
 
-It would be nice if the URL path wasn't hardcoded there, duplicating what"s in
+It would be nice if the URL path wasn't hardcoded there, duplicating what's in
 urls.py
 
 
