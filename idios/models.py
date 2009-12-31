@@ -20,5 +20,6 @@ class ProfileBase(models.Model):
     def __unicode__(self):
         return self.user.username
     
-    def get_absolute_url(self):
+    def get_absolute_url(self, group=None):
+        # @@@ make group-aware
         return reverse("profile_detail", kwargs={"username": self.user.username})

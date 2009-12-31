@@ -1,6 +1,7 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
@@ -20,8 +21,39 @@ else:
 
 
 
-def profiles(request, template_name="idios/profiles.html"):
+def group_and_bridge(kwargs):
+    """
+    Given kwargs from the view (with view specific keys popped) pull out the
+    bridge and fetch group from database.
+    """
     
+    bridge = kwargs.pop("bridge", None)
+    
+    if bridge:
+        try:
+            group = bridge.get_group(**kwargs)
+        except ObjectDoesNotExist:
+            raise Http404
+    else:
+        group = None
+    
+    return group, bridge
+
+
+def group_context(group, bridge):
+    # @@@ use bridge
+    return {
+        "group": group,
+    }
+
+
+def profiles(request, **kwargs):
+    
+    template_name = kwargs.pop("template_name", "idios/profiles.html")
+    
+    group, bridge = group_and_bridge(kwargs)
+    
+    # @@@ not group-aware (need to look at moving to profile model)
     users = User.objects.all().order_by("-date_joined")
     
     search_terms = request.GET.get("search", "")
@@ -36,15 +68,23 @@ def profiles(request, template_name="idios/profiles.html"):
     elif order == "name":
         users = users.order_by("username")
     
-    return render_to_response(template_name, {
+    ctx = group_context(group, bridge)
+    ctx.update({
         "users": users,
         "order": order,
         "search_terms": search_terms,
-    }, context_instance=RequestContext(request))
-
-
-def profile(request, username, template_name="idios/profile.html"):
+    })
     
+    return render_to_response(template_name, RequestContext(request, ctx))
+
+
+def profile(request, username, **kwargs):
+    
+    template_name = kwargs.pop("template_name", "idios/profile.html")
+    
+    group, bridge = group_and_bridge(kwargs)
+    
+    # @@@ not group-aware (need to look at moving to profile model)
     other_user = get_object_or_404(User, username=username)
     
     if request.user.is_authenticated():
@@ -55,17 +95,20 @@ def profile(request, username, template_name="idios/profile.html"):
     else:
         is_me = False
     
-    return render_to_response(template_name, {
+    ctx = group_context(group, bridge)
+    ctx.update({
         "is_me": is_me,
         "other_user": other_user,
-    }, context_instance=RequestContext(request))
+    })
+    
+    return render_to_response(template_name, RequestContext(request, ctx))
 
 
 @login_required
 def profile_edit(request, **kwargs):
     
-    template_name = kwargs.get("template_name", "idios/profile_edit.html")
-    form_class = kwargs.get("form_class")
+    template_name = kwargs.pop("template_name", "idios/profile_edit.html")
+    form_class = kwargs.pop("form_class", None)
     
     if form_class is None:
         form_class = get_profile_form()
@@ -76,6 +119,9 @@ def profile_edit(request, **kwargs):
             "idios/profile_edit_facebox.html"
         )
     
+    group, bridge = group_and_bridge(kwargs)
+    
+    # @@@ not group-aware (need to look at moving to profile model)
     profile = request.user.get_profile()
     
     if request.method == "POST":
@@ -84,13 +130,14 @@ def profile_edit(request, **kwargs):
             profile = profile_form.save(commit=False)
             profile.user = request.user
             profile.save()
-            
-            redirect_to = reverse("profile_detail", args=[request.user.username])
-            return HttpResponseRedirect(redirect_to)
+            return HttpResponseRedirect(profile.get_absolute_url(group=group))
     else:
         profile_form = form_class(instance=profile)
     
-    return render_to_response(template_name, {
+    ctx = group_context(group, bridge)
+    ctx.update({
         "profile": profile,
         "profile_form": profile_form,
-    }, context_instance=RequestContext(request))
+    })
+    
+    return render_to_response(template_name, RequestContext(request, ctx))
