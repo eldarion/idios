@@ -1,8 +1,8 @@
 # coding: utf-8
-
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+
+from django.contrib.auth.models import User
 
 from idios.forms import ProfileForm
 from idios.models import Profile
@@ -10,10 +10,10 @@ from idios.models import Profile
 
 
 class TestProfileForm(TestCase):
-    fixtures = ['test_idios.json']
+    fixtures = ["test_idios.json"]
     
     def setUp(self):
-        self.user = User.objects.get(username='bob')
+        self.user = User.objects.get(username="bob")
         self.profile = Profile.objects.get(user=self.user)
     
     def tearDown(self):

@@ -1,17 +1,17 @@
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
-
+from django.shortcuts import get_object_or_404, render_to_response
+from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
-from idios.models import Profile
 from idios.forms import ProfileForm
+from idios.models import Profile
+
 
 
 if "notification" in settings.INSTALLED_APPS:
@@ -20,22 +20,27 @@ else:
     notification = None
 
 
+
 def profiles(request, template_name="idios/profiles.html"):
+    
     users = User.objects.all().order_by("-date_joined")
-    search_terms = request.GET.get('search', '')
-    order = request.GET.get('order')
+    
+    search_terms = request.GET.get("search", "")
+    order = request.GET.get("order")
+    
     if not order:
-        order = 'date'
+        order = "date"
     if search_terms:
         users = users.filter(username__icontains=search_terms)
-    if order == 'date':
+    if order == "date":
         users = users.order_by("-date_joined")
-    elif order == 'name':
+    elif order == "name":
         users = users.order_by("username")
+    
     return render_to_response(template_name, {
-        'users':users,
-        'order' : order,
-        'search_terms' : search_terms
+        "users": users,
+        "order": order,
+        "search_terms": search_terms,
     }, context_instance=RequestContext(request))
 
 
@@ -76,7 +81,9 @@ def profile_edit(request, form_class=ProfileForm, **kwargs):
             profile = profile_form.save(commit=False)
             profile.user = request.user
             profile.save()
-            return HttpResponseRedirect(reverse("profile_detail", args=[request.user.username]))
+            
+            redirect_to = reverse("profile_detail", args=[request.user.username])
+            return HttpResponseRedirect(redirect_to)
     else:
         profile_form = form_class(instance=profile)
     
