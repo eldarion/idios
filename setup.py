@@ -3,7 +3,7 @@ from distutils.core import setup
 
 setup(
     name = "idios",
-    version = "0.1.0-dev1",
+    version = "0.1.dev1",
     author = "Eldarion",
     author_email = "development@eldarion.com",
     description = "an extensible profile app designed to replace the profiles apps in Pinax",
