@@ -4,10 +4,10 @@ from django import forms
 from django.conf import settings
 from django.db import models
 from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.views.decorators.csrf import csrf_protect
 
-from idios.utils import get_profile_model
+from idios.utils import get_profile_model, get_default_redirect
 
 
 class AdditionalInfoMiddleware(object):
@@ -58,7 +58,7 @@ def handle_additional_info(request):
                 for field, value in form.cleaned_data.iteritems():
                     setattr(profile, field, value)
                 profile.save()
-                return None
+                return redirect(get_default_redirect(request))
         else:
             form = AdditionalInfoForm()
         ctx = {
