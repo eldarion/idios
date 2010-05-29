@@ -72,6 +72,7 @@ div.body h3,
 div.body h4,
 div.body h5,
 div.body h6 {
+    color: #fff;
 }
 
 a {
