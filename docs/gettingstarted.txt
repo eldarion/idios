@@ -14,8 +14,10 @@ them together.
 Prerequisites
 =============
 
-To get running with idios you only need a Django project. This, of course,
-requires Django to be installed and working.
+These are the requirements to run idios:
+
+ * Python **2.4+**
+ * Django **1.2+**
 
 
 Installation
