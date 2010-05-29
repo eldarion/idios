@@ -81,11 +81,13 @@ a {
 a:hover {
     color: #FFF;
 }
-pre {
+pre, span.pre {
     font-family: "Monaco", "Lucida Console", "Andale Mono", monospace;
     font-size: 10pt;
-    padding: 5px 0;
     color: #FFF;
+}
+pre {
+    padding: 5px 0;
     background-color: #;
     overflow: auto;
 }
