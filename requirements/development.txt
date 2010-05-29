@@ -1,2 +1,2 @@
 Sphinx==1.0b1
-Sphinx-PyPI-upload==0.2.1
+-e hg+https://brosner@bitbucket.org/brosner/sphinx-pypi-upload#egg=sphinx-pypi-upload
