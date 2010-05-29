@@ -27,8 +27,8 @@ div.document {
 div.related {
     line-height: 36px;
     color: #ffffff;
-    border-top: 1px solid gray;
-    border-bottom: 1px solid gray;
+    border-top: 1px solid #444;
+    border-bottom: 1px solid #444;
 }
 div.body {
     padding: 1em 30px 30px 30px;
@@ -48,7 +48,6 @@ div.sphinxsidebar {
 
 div.sphinxsidebarwrapper{
     padding: 20px;
-    border-right: 1px solid gray;
 }
 div.sphinxsidebar ul {
     margin: 10px 10px 10px 20px;
