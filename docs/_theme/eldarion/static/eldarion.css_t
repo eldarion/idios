@@ -92,3 +92,7 @@ pre {
 div.body p, div.body dd, div.body li {
     line-height: 1.5em;
 }
+div.sphinxsidebar h3 a {
+    color: inherit;
+    text-decoration: none;
+}
