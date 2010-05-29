@@ -16,7 +16,7 @@ Prerequisites
 
 These are the requirements to run idios:
 
- * Python **2.4+**
+ * Python **2.4+** (Python 3.x is **not** supported yet)
  * Django **1.2+**
 
 
