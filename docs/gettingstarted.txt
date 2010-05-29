@@ -4,12 +4,96 @@
 Getting started
 ===============
 
+This document is designed to get you up and running with idios. This app is
+designed for use with Django_, however, can be used with Pinax_. Pinax can
+provide some extra componets which will enhance the functionality of idios.
+Those extra componets are designed for Django too and Pinax simply brings
+them together.
+
 
 Prerequisites
 =============
+
+To get running with idios you only need a Django project. This, of course,
+requires Django to be installed and working.
 
 
 Installation
 ============
 
+To install idios use pip:
 
+.. code-block:: none
+
+    pip install idios
+
+Add idios to your ``INSTALLED_APPS``:
+
+.. code-block:: python
+
+    INSTALLED_APPS = [
+        # ...
+        "idios",
+    ]
+
+Hook up idios to your URLconf:
+
+.. code-block:: python
+
+    urlpatterns = patterns("",
+        # ...
+        url(r"^profiles/", include("idios.urls"))
+    )
+
+This is largely all you need to do to get idios setup in your project.
+Continue reading on to learn more about how to use idios.
+
+
+Usage
+=====
+
+To get Django to link ``User`` instances to their profile pages you can add
+this bit to ``settings.py``:
+
+.. code-block:: python
+
+    ABSOLUTE_URL_OVERRIDES = {
+        "auth.user": lambda o: "/profiles/profile/%s/" % o.username,
+    }
+
+Now when you call ``get_absolute_url`` on any ``User`` instance it will
+return the URL to that user's profile as configured above.
+
+idios is designed to give you full control of the profile model. idios
+provides a ``ProfileBase`` for your profile model to extend. To hook in your
+profile model add this to your ``settings.py``:
+
+.. code-block:: python
+
+    AUTH_PROFILE_MODULE = "myapp.Profile"
+
+This will additionally setup your profile model as the one Django's auth app
+will use.
+
+Where you put your profile model is entirely up to you. A common practice
+we've used is either having a project specific app named ``profiles`` or named
+after the project (we name all projects with ``_project`` suffix leaving the
+first bit open for an app name).
+
+Here is what how your profile model might look like:
+
+.. code-block:: python
+
+    from django.db import models
+    
+    from idios.models import ProfileBase
+    
+    
+    class Profile(ProfileBase):
+        
+        name = models.CharField(max_length=100)
+        phone_number = models.CharField(max_length=20)
+
+
+.. _Django: http://www.djangoproject.com/
+.. _Pinax: http://pinaxproject.com/
