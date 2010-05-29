@@ -1,0 +1,15 @@
+.. _ref-gettingstarted:
+
+===============
+Getting started
+===============
+
+
+Prerequisites
+=============
+
+
+Installation
+============
+
+
