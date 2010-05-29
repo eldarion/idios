@@ -48,7 +48,9 @@ def group_context(group, bridge):
 
 
 def profiles(request, **kwargs):
-    
+    """
+    profiles
+    """
     template_name = kwargs.pop("template_name", "idios/profiles.html")
     
     group, bridge = group_and_bridge(kwargs)
@@ -79,7 +81,9 @@ def profiles(request, **kwargs):
 
 
 def profile(request, username, **kwargs):
-    
+    """
+    profile
+    """
     template_name = kwargs.pop("template_name", "idios/profile.html")
     
     group, bridge = group_and_bridge(kwargs)
@@ -106,7 +110,9 @@ def profile(request, username, **kwargs):
 
 @login_required
 def profile_edit(request, **kwargs):
-    
+    """
+    profile_edit
+    """
     template_name = kwargs.pop("template_name", "idios/profile_edit.html")
     form_class = kwargs.pop("form_class", None)
     

@@ -10,6 +10,7 @@ idios is an extensible user profile app built by Eldarion. It was originally
 designed to improve upon Pinax profile features and has now been open-sourced.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    gettingstarted
+   reference

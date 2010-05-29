@@ -1,0 +1,40 @@
+.. _ref-reference:
+
+=========
+Reference
+=========
+
+This document covers 
+
+
+Settings
+========
+
+
+
+
+Modules
+=======
+
+
+``idios.urls``
+--------------
+
+
+``idios.utils``
+---------------
+
+.. module:: idios.utils
+
+.. autofunction:: get_profile_model
+.. autofunction:: get_profile_form
+
+
+``idios.views``
+---------------
+
+.. module:: idios.views
+
+.. autofunction:: profiles
+.. autofunction:: profile
+.. autofunction:: profile_edit
