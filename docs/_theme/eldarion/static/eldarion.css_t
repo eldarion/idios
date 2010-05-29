@@ -19,7 +19,7 @@ div.documentwrapper {
     width: 100%;
 }
 div.bodywrapper {
-    margin: 0 0 0 300px;
+    margin: 0 300px 0 0;
 }
 div.document {
 /*    background-color: #fafafa;*/
@@ -41,6 +41,7 @@ div.footer {
     font-size: 75%;
 }
 div.sphinxsidebar {
+    float: right;
     font-size: 0.9em;
     line-height: 1.5em;
     width: 300px
