@@ -23,7 +23,7 @@ These are the requirements to run idios:
 Installation
 ============
 
-To install idios use pip:
+To install idios use pip_:
 
 .. code-block:: none
 
@@ -99,3 +99,4 @@ Here is what how your profile model might look like:
 
 .. _Django: http://www.djangoproject.com/
 .. _Pinax: http://pinaxproject.com/
+.. _pip: http://pip.openplans.org/
