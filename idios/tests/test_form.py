@@ -8,7 +8,6 @@ from idios.forms import ProfileForm
 from idios.models import Profile
 
 
-
 class TestProfileForm(TestCase):
     fixtures = ["test_idios.json"]
     

@@ -13,12 +13,10 @@ from django.contrib.auth.models import User
 from idios.utils import get_profile_form
 
 
-
 if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
 else:
     notification = None
-
 
 
 def group_and_bridge(kwargs):
