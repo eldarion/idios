@@ -112,7 +112,8 @@ def profile(request, profile_slug, username, **kwargs):
         "is_me": is_me,
         "other_user": other_user,
         "profile": profile,
-        "profiles": profiles
+        "profiles": profiles,
+        "current_profile_slug": profile_slug
     })
     
     return render_to_response(template_name, RequestContext(request, ctx))
