@@ -27,8 +27,8 @@ class ProfileBase(models.Model):
         return self.user.username
     
     def get_absolute_url(self, group=None):
-        # @@@ make group-aware
-        return reverse("profile_detail", kwargs={"username": self.user.username})
+        # @@@ make group-aware / # @@@ hard coded nasty on the profile_slug, refactor immediately
+        return reverse("profile_detail", kwargs={"profile_slug": "default", "username": self.user.username})
 
 
 def create_profile(sender, instance=None, **kwargs):
