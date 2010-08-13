@@ -100,11 +100,19 @@ def profile(request, profile_slug, username, **kwargs):
     else:
         is_me = False
     
+    profiles = []
+    for k in settings.IDIOS_PROFILE_MODULES.keys():
+        p = None
+        for p in get_profile_model(k).objects.filter(user=other_user):
+            break
+        profiles.append({"profile_slug": k, "profile": p})
+    
     ctx = group_context(group, bridge)
     ctx.update({
         "is_me": is_me,
         "other_user": other_user,
-        "profile": profile
+        "profile": profile,
+        "profiles": profiles
     })
     
     return render_to_response(template_name, RequestContext(request, ctx))
