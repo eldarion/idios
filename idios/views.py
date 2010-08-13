@@ -74,6 +74,7 @@ def profiles(request, profile_slug, **kwargs):
         "profiles": profiles,
         "order": order,
         "search_terms": search_terms,
+        "current_profile_slug": profile_slug
     })
     
     return render_to_response(template_name, RequestContext(request, ctx))
@@ -154,6 +155,7 @@ def profile_create(request, profile_slug, **kwargs):
     ctx.update({
         "profile": profile,
         "profile_form": profile_form,
+        "current_profile_slug": profile_slug
     })
     
     return render_to_response(template_name, RequestContext(request, ctx))
@@ -196,6 +198,7 @@ def profile_edit(request, profile_slug, **kwargs):
     ctx.update({
         "profile": profile,
         "profile_form": profile_form,
+        "current_profile_slug": profile_slug
     })
     
     return render_to_response(template_name, RequestContext(request, ctx))
