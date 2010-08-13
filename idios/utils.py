@@ -14,7 +14,7 @@ from django.db.models import get_model
 from django.contrib.auth.models import SiteProfileNotAvailable
 
 
-def get_profile_model():
+def get_profile_model(profile_slug=None):
     """
     Return the model class for the currently-active user profile
     model, as defined by the ``AUTH_PROFILE_MODULE`` setting. If that
@@ -22,16 +22,23 @@ def get_profile_model():
     ``django.contrib.auth.models.SiteProfileNotAvailable``.
     
     """
-    if (not hasattr(settings, "AUTH_PROFILE_MODULE")) or \
-           (not settings.AUTH_PROFILE_MODULE):
-        raise SiteProfileNotAvailable
-    profile_mod = get_model(*settings.AUTH_PROFILE_MODULE.split("."))
+    if profile_slug is None:
+        if (not hasattr(settings, "AUTH_PROFILE_MODULE")) or \
+               (not settings.AUTH_PROFILE_MODULE):
+            raise SiteProfileNotAvailable
+        module = settings.AUTH_PROFILE_MODULE
+    else:
+        if (not hasattr(settings, "IDIOS_PROFILE_MODULES")) or \
+               (not settings.IDIOS_PROFILE_MODULES):
+            raise SiteProfileNotAvailable
+        module = IDIOS_PROFILE_MODULES.get(profile_slug).get("model")
+    profile_mod = get_model(*module.split("."))
     if profile_mod is None:
         raise SiteProfileNotAvailable
     return profile_mod
 
 
-def get_profile_form():
+def get_profile_form(profile_slug):
     """
     Return a form class (a subclass of the default ``ModelForm``)
     suitable for creating/editing instances of the site-specific user
@@ -40,7 +47,7 @@ def get_profile_form():
     ``django.contrib.auth.models.SiteProfileNotAvailable``.
     
     """
-    profile_mod = get_profile_model()
+    profile_mod = get_profile_model(profile_slug)
     class _ProfileForm(forms.ModelForm):
         class Meta:
             model = profile_mod
