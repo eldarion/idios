@@ -31,7 +31,7 @@ def get_profile_model(profile_slug=None):
         if (not hasattr(settings, "IDIOS_PROFILE_MODULES")) or \
                (not settings.IDIOS_PROFILE_MODULES):
             raise SiteProfileNotAvailable
-        module = IDIOS_PROFILE_MODULES.get(profile_slug).get("model")
+        module = settings.IDIOS_PROFILE_MODULES.get(profile_slug).get("model")
     profile_mod = get_model(*module.split("."))
     if profile_mod is None:
         raise SiteProfileNotAvailable
