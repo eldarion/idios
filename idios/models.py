@@ -16,7 +16,9 @@ except ImportError:
 
 class ProfileBase(models.Model):
     
-    user = models.ForeignKey(User, unique=True, verbose_name=_("user"))
+    # @@@ could be unique=True if subclasses don't inherit a concrete base class
+    # @@@ need to look at this more
+    user = models.ForeignKey(User, verbose_name=_("user"))
     
     class Meta:
         verbose_name = _("profile")
