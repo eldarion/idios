@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
@@ -7,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
 from idios.utils import get_profile_model
+from idios.settings import MULTIPLE_PROFILES
 
 try:
     from pinax.apps.account.signals import user_logged_in
@@ -14,24 +14,38 @@ except ImportError:
     user_logged_in = None
 
 
+class ClassProperty(property):
+        def __get__(self, cls, owner):
+                return self.fget.__get__(None, owner)()
+
+
 class ProfileBase(models.Model):
     
     # @@@ could be unique=True if subclasses don't inherit a concrete base class
     # @@@ need to look at this more
     user = models.ForeignKey(User, verbose_name=_("user"))
-    
+
     class Meta:
         verbose_name = _("profile")
         verbose_name_plural = _("profiles")
         abstract = True
-    
+        
     def __unicode__(self):
         return self.user.username
     
     def get_absolute_url(self, group=None):
-        # @@@ make group-aware / # @@@ hard coded nasty on the profile_slug, refactor immediately
-        return reverse("profile_detail", kwargs={"profile_slug": "default", "username": self.user.username})
+        # @@@ make group-aware
+        kwargs = {"username": self.user.username}
+        if MULTIPLE_PROFILES:
+            kwargs["profile_slug"] = self.profile_slug
+        return reverse("profile_detail", kwargs=kwargs)
 
+    @classmethod
+    def _default_profile_slug(cls):
+        return cls._meta.module_name
+
+    profile_slug = ClassProperty(_default_profile_slug)
+    
 
 def create_profile(sender, instance=None, **kwargs):
     if instance is None:

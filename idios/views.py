@@ -10,7 +10,7 @@ from django.utils.translation import ugettext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
-from idios.utils import get_profile_form, get_profile_model
+from idios.utils import get_profile_form, get_profile_model, get_profile_base
 
 
 if "notification" in settings.INSTALLED_APPS:
@@ -44,17 +44,28 @@ def group_context(group, bridge):
         "group": group,
     }
 
+ALL_PROFILES = object()
 
-def profiles(request, profile_slug, **kwargs):
+def profiles(request, profile_slug=None, **kwargs):
     """
-    profiles
+    List all profiles of a given type (or the default type, if
+    profile_slug is not given.)
+
+    If profile_slug is the ``ALL_PROFILES`` marker object, all
+    profiles are listed.
+    
     """
     template_name = kwargs.pop("template_name", "idios/profiles.html")
     
     group, bridge = group_and_bridge(kwargs)
     
     # @@@ not group-aware (need to look at moving to profile model)
-    profile_class = get_profile_model(profile_slug)
+    if profile_slug is ALL_PROFILES:
+        profile_class = get_profile_base()
+    else:
+        profile_class = get_profile_model(profile_slug)
+    if profile_class is None:
+        raise Http404
     profiles = profile_class.objects.select_related().order_by("-date_joined")
     
     search_terms = request.GET.get("search", "")
@@ -74,13 +85,12 @@ def profiles(request, profile_slug, **kwargs):
         "profiles": profiles,
         "order": order,
         "search_terms": search_terms,
-        "current_profile_slug": profile_slug
     })
     
     return render_to_response(template_name, RequestContext(request, ctx))
 
 
-def profile(request, profile_slug, username, **kwargs):
+def profile(request, username, profile_slug=None, **kwargs):
     """
     profile
     """
@@ -91,6 +101,8 @@ def profile(request, profile_slug, username, **kwargs):
     # @@@ not group-aware (need to look at moving to profile model)
     other_user = get_object_or_404(User, username=username)
     profile_class = get_profile_model(profile_slug)
+    if profile_class is None:
+        raise Http404
     profile = profile_class.objects.get(user=other_user)
     
     if request.user.is_authenticated():
@@ -100,13 +112,9 @@ def profile(request, profile_slug, username, **kwargs):
             is_me = False
     else:
         is_me = False
-    
-    profiles = []
-    for k in settings.IDIOS_PROFILE_MODULES.keys():
-        p = None
-        for p in get_profile_model(k).objects.filter(user=other_user):
-            break
-        profiles.append({"profile_slug": k, "profile": p})
+
+    base_profile_class = get_profile_base()
+    profiles = base_profile_class.objects.filter(user=other_user)
     
     ctx = group_context(group, bridge)
     ctx.update({
@@ -114,22 +122,18 @@ def profile(request, profile_slug, username, **kwargs):
         "other_user": other_user,
         "profile": profile,
         "profiles": profiles,
-        "current_profile_slug": profile_slug
     })
     
     return render_to_response(template_name, RequestContext(request, ctx))
 
 
 @login_required
-def profile_create(request, profile_slug, **kwargs):
+def profile_create(request, profile_slug=None, **kwargs):
     """
     profile_create
     """
     template_name = kwargs.pop("template_name", "idios/profile_create.html")
     form_class = kwargs.pop("form_class", None)
-    
-    if form_class is None:
-        form_class = get_profile_form(profile_slug) # @@@ is this the same for edit/create
     
     if request.is_ajax():
         template_name = kwargs.get(
@@ -139,7 +143,12 @@ def profile_create(request, profile_slug, **kwargs):
     
     group, bridge = group_and_bridge(kwargs)
     profile_class = get_profile_model(profile_slug)
+    if profile_class is None:
+        raise Http404
     profile = profile_class.objects.get(user=request.user)
+    
+    if form_class is None:
+        form_class = get_profile_form(profile_class) # @@@ is this the same for edit/create
     
     if request.method == "POST":
         profile_form = form_class(request.POST, instance=profile)
@@ -155,22 +164,18 @@ def profile_create(request, profile_slug, **kwargs):
     ctx.update({
         "profile": profile,
         "profile_form": profile_form,
-        "current_profile_slug": profile_slug
     })
     
     return render_to_response(template_name, RequestContext(request, ctx))
 
 
 @login_required
-def profile_edit(request, profile_slug, **kwargs):
+def profile_edit(request, profile_slug=None, **kwargs):
     """
     profile_edit
     """
     template_name = kwargs.pop("template_name", "idios/profile_edit.html")
     form_class = kwargs.pop("form_class", None)
-    
-    if form_class is None:
-        form_class = get_profile_form(profile_slug)
     
     if request.is_ajax():
         template_name = kwargs.get(
@@ -182,7 +187,12 @@ def profile_edit(request, profile_slug, **kwargs):
     
     # @@@ not group-aware (need to look at moving to profile model)
     profile_class = get_profile_model(profile_slug)
+    if profile_class is None:
+        raise Http404
     profile = profile_class.objects.get(user=request.user)
+    
+    if form_class is None:
+        form_class = get_profile_form(profile_class)
     
     if request.method == "POST":
         profile_form = form_class(request.POST, instance=profile)
@@ -198,7 +208,6 @@ def profile_edit(request, profile_slug, **kwargs):
     ctx.update({
         "profile": profile,
         "profile_form": profile_form,
-        "current_profile_slug": profile_slug
     })
     
     return render_to_response(template_name, RequestContext(request, ctx))
