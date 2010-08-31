@@ -5,8 +5,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
 
+import idios
 from idios.utils import get_profile_model
-from idios.settings import MULTIPLE_PROFILES
 
 try:
     from pinax.apps.account.signals import user_logged_in
@@ -36,15 +36,14 @@ class ProfileBase(models.Model):
     def get_absolute_url(self, group=None):
         # @@@ make group-aware
         kwargs = {"username": self.user.username}
-        if MULTIPLE_PROFILES:
+        if idios.settings.MULTIPLE_PROFILES:
             kwargs["profile_slug"] = self.profile_slug
         return reverse("profile_detail", kwargs=kwargs)
 
-    @classmethod
     def _default_profile_slug(cls):
         return cls._meta.module_name
 
-    profile_slug = ClassProperty(_default_profile_slug)
+    profile_slug = ClassProperty(classmethod(_default_profile_slug))
 
 
 def create_profile(sender, instance=None, **kwargs):

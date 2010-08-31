@@ -12,7 +12,7 @@ from django.db.models import get_model
 
 from django.contrib.auth.models import SiteProfileNotAvailable
 
-from idios import settings
+import idios
 
 def get_profile_base():
     """
@@ -34,10 +34,10 @@ def get_profile_base():
     raise ``django.contrib.auth.models.SiteProfileNotAvailable``.
 
     """
-    if settings.MULTIPLE_PROFILES and settings.PROFILE_BASE:
-        module = settings.PROFILE_BASE
+    if idios.settings.MULTIPLE_PROFILES and idios.settings.PROFILE_BASE:
+        module = idios.settings.PROFILE_BASE
     else:
-        module = settings.DEFAULT_PROFILE_MODULE
+        module = idios.settings.DEFAULT_PROFILE_MODULE
     model = get_model(*module.split('.'))
     if model is None:
         raise SiteProfileNotAvailable
@@ -60,12 +60,14 @@ def get_profile_model(profile_slug=None):
     
     """
     if profile_slug is None:
-        module = settings.DEFAULT_PROFILE_MODULE
+        module = idios.settings.DEFAULT_PROFILE_MODULE
+        if module is None:
+            raise SiteProfileNotAvailable
         model = get_model(*module.split('.'))
         if model is None:
             raise SiteProfileNotAvailable
     else:
-        for module in settings.PROFILE_MODULES:
+        for module in idios.settings.PROFILE_MODULES:
             model = get_model(*module.split('.'))
             if model and profile_slug == model.profile_slug:
                 break

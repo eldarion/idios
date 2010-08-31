@@ -145,24 +145,22 @@ def profile_create(request, profile_slug=None, **kwargs):
     profile_class = get_profile_model(profile_slug)
     if profile_class is None:
         raise Http404
-    profile = profile_class.objects.get(user=request.user)
     
     if form_class is None:
         form_class = get_profile_form(profile_class) # @@@ is this the same for edit/create
     
     if request.method == "POST":
-        profile_form = form_class(request.POST, instance=profile)
+        profile_form = form_class(request.POST)
         if profile_form.is_valid():
             profile = profile_form.save(commit=False)
             profile.user = request.user
             profile.save()
             return HttpResponseRedirect(profile.get_absolute_url(group=group))
     else:
-        profile_form = form_class(instance=profile)
+        profile_form = form_class()
     
     ctx = group_context(group, bridge)
     ctx.update({
-        "profile": profile,
         "profile_form": profile_form,
     })
     
