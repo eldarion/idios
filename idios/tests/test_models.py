@@ -40,12 +40,12 @@ class TestProfileBaseMultiProfiles(IdiosSettingsTestCase):
     def test_get_absolute_url_default_profile(self):
         p = SimpleProfile.objects.get(user__username="joe")
         self.assertEqual(p.get_absolute_url(),
-                         "/profiles/simpleprofile/profile/joe/")
+                         "/profiles/simpleprofile/profile/%s/" % p.pk)
     
     def test_get_absolute_url_alternate_profile(self):
         p = SecretIdentityProfile.objects.create(user=User.objects.get(username="joe"))
         self.assertEqual(p.get_absolute_url(),
-                         "/profiles/secret/profile/joe/")
+                         "/profiles/secret/profile/%s/" % p.pk)
     
     def test_override_profile_slug(self):
         self.assertEqual(SecretIdentityProfile.profile_slug, "secret")

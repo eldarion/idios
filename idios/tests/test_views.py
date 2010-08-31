@@ -36,7 +36,7 @@ class TestViews(IdiosSettingsTestCase):
         self.assertRedirects(response, "/profiles/profile/joe/")
         self.assertEqual(SimpleProfile.objects.get(user__username="joe").name,
                          "Joe Doe")
-
+    
     def test_nonexistent_profile_slug_returns_404(self):
         logged_in = self.client.login(username="joe", password="test")
         self.assert_(logged_in)
@@ -82,7 +82,7 @@ class TestViewsMultiProfiles(TestViews):
             super_power="x-ray vision")
         response = self.client.get(reverse("profile_detail",
                                            kwargs={"profile_slug": "secret",
-                                                   "username": "joe"}))
+                                                   "profile_pk": profile.pk}))
         self.assertEqual(response.template.name, "idios/profile.html")
         self.assertEqual(response.context["profile"].super_power,
                          "x-ray vision")
@@ -94,9 +94,9 @@ class TestViewsMultiProfiles(TestViews):
         self.assertEqual(response.status_code, 200)
         response = self.client.post(reverse("profile_edit"),
                                     {"name": "Joe Doe"})
-        self.assertRedirects(response, "/profiles/simpleprofile/profile/joe/")
-        self.assertEqual(SimpleProfile.objects.get(user__username="joe").name,
-                         "Joe Doe")
+        profile = SimpleProfile.objects.get(user__username="joe")
+        self.assertRedirects(response, "/profiles/simpleprofile/profile/%s/" % profile.pk)
+        self.assertEqual(profile.name, "Joe Doe")
     
     def test_edit_alternative_profile(self):
         profile = SecretIdentityProfile.objects.create(
@@ -108,7 +108,7 @@ class TestViewsMultiProfiles(TestViews):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         response = self.client.post(url, {"super_power": "night vision"})
-        self.assertRedirects(response, "/profiles/secret/profile/joe/")
+        self.assertRedirects(response, "/profiles/secret/profile/%s/" % profile.pk)
         self.assertEqual(SecretIdentityProfile.objects.get(user__username="joe").super_power,
                          "night vision")
     
@@ -119,7 +119,6 @@ class TestViewsMultiProfiles(TestViews):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         response = self.client.post(url, {"super_power": "night vision"})
-        self.assertRedirects(response, "/profiles/secret/profile/joe/")
-        self.assertEqual(SecretIdentityProfile.objects.get(user__username="joe").super_power,
-                         "night vision")
-        
+        profile = SecretIdentityProfile.objects.get(user__username="joe")
+        self.assertRedirects(response, "/profiles/secret/profile/%s/" % profile.pk)
+        self.assertEqual(profile.super_power, "night vision")

@@ -35,9 +35,13 @@ class ProfileBase(models.Model):
     
     def get_absolute_url(self, group=None):
         # @@@ make group-aware
-        kwargs = {"username": self.user.username}
         if idios.settings.MULTIPLE_PROFILES:
-            kwargs["profile_slug"] = self.profile_slug
+            # @@@ using PK here is kind of ugly. the alternative is to
+            # generate a unique slug for each profile, which is tricky
+            kwargs = {"profile_slug": self.profile_slug,
+                      "profile_pk": self.pk}
+        else:
+            kwargs = {"username": self.user.username}
         return reverse("profile_detail", kwargs=kwargs)
 
     def _default_profile_slug(cls):

@@ -90,20 +90,31 @@ def profiles(request, profile_slug=None, **kwargs):
     return render_to_response(template_name, RequestContext(request, ctx))
 
 
-def profile(request, username, profile_slug=None, **kwargs):
-    """
-    profile
-    """
-    template_name = kwargs.pop("template_name", "idios/profile.html")
-    
-    group, bridge = group_and_bridge(kwargs)
-    
+def profile_by_pk(request, profile_pk, profile_slug, **kwargs):
     # @@@ not group-aware (need to look at moving to profile model)
-    other_user = get_object_or_404(User, username=username)
     profile_class = get_profile_model(profile_slug)
     if profile_class is None:
         raise Http404
-    profile = profile_class.objects.get(user=other_user)
+    profile = get_object_or_404(profile_class, pk=profile_pk)
+    other_user = profile.user
+    return _profile(request, profile, other_user, **kwargs)
+
+
+def profile(request, username, **kwargs):
+    """
+    profile
+    """
+    # @@@ not group-aware (need to look at moving to profile model)
+    other_user = get_object_or_404(User, username=username)
+    profile_class = get_profile_model()
+    profile = get_object_or_404(profile_class, user=other_user)
+    return _profile(request, profile, other_user, **kwargs)
+
+
+def _profile(request, profile, other_user, **kwargs):
+    template_name = kwargs.pop("template_name", "idios/profile.html")
+    
+    group, bridge = group_and_bridge(kwargs)
     
     if request.user.is_authenticated():
         if request.user == other_user:
