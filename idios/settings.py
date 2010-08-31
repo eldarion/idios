@@ -9,9 +9,6 @@ defined, False otherwise.
 ``AUTH_PROFILE_MODULE``, or the first one listed in
 ``IDIOS_PROFILE_MODULES``.
 
-This module also sets a default value of "idios.ProfileBase" for the
-``IDIOS_PROFILE_BASE`` setting.
-
 """
 
 from django.conf import settings
@@ -33,4 +30,4 @@ for module in modules + getattr(settings, 'IDIOS_PROFILE_MODULES', []):
 
 MULTIPLE_PROFILES = len(PROFILE_MODULES) > 1
 
-PROFILE_BASE = getattr(settings, 'IDIOS_PROFILE_BASE', 'idios.ProfileBase')
+PROFILE_BASE = getattr(settings, 'IDIOS_PROFILE_BASE', None)

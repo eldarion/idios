@@ -29,7 +29,7 @@ class ProfileBase(models.Model):
         verbose_name = _("profile")
         verbose_name_plural = _("profiles")
         abstract = True
-        
+    
     def __unicode__(self):
         return self.user.username
     
@@ -45,7 +45,7 @@ class ProfileBase(models.Model):
         return cls._meta.module_name
 
     profile_slug = ClassProperty(_default_profile_slug)
-    
+
 
 def create_profile(sender, instance=None, **kwargs):
     if instance is None:

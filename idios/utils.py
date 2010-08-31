@@ -16,25 +16,25 @@ from idios import settings
 
 def get_profile_base():
     """
-    Return the profile model class which is the base class for all
-    profile models (used for querying on all profiles).
+    Return a profile model class which is a concrete base class for
+    all profile models (used for querying on all profiles).
 
     If multiple-profiles are not in use, this will be the single
-    profile model class itself: there is no reason to query on an
-    ancestor model in this case.
+    profile model class itself.
 
     If multiple-profiles are in use, this will be the model class
-    referenced by the ``IDIOS_PROFILE_BASE`` setting. Normally this
-    will be idios' own ``ProfileBase`` model, but some projects may
-    have another model class inheriting from ProfileBase and defining
-    some additional fields, which all their profile models then
-    inherit from in turn.
+    referenced by the ``IDIOS_PROFILE_BASE`` setting.  If
+    ``IDIOS_PROFILE_BASE`` is not set (some projects may not have a
+    concrete base class for all profile classes), then querying all
+    profiles is not possible, and the all-profiles view will simply
+    query the default profile model. (Idios' own ``ProfileBase`` is
+    abstract and thus non-queryable.)
 
     If the appropriate setting does not resolve to an actual model,
     raise ``django.contrib.auth.models.SiteProfileNotAvailable``.
 
     """
-    if settings.MULTIPLE_PROFILES:
+    if settings.MULTIPLE_PROFILES and settings.PROFILE_BASE:
         module = settings.PROFILE_BASE
     else:
         module = settings.DEFAULT_PROFILE_MODULE
