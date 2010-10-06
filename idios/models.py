@@ -16,7 +16,7 @@ except ImportError:
 
 class ProfileBase(models.Model):
     
-    user = models.ForeignKey(User, unique=True, verbose_name=_("user"))
+    user = models.OneToOneField(User, verbose_name=_("user"))
     
     class Meta:
         verbose_name = _("profile")
