@@ -16,7 +16,6 @@ setup(
     packages = [
         "idios",
         "idios.templatetags",
-        "idios.tests",
     ],
     classifiers = [
         "Development Status :: 3 - Alpha",
