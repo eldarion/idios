@@ -1,9 +1,12 @@
 from distutils.core import setup
 
 
+VERSION = __import__("idios").__version__
+
+
 setup(
     name = "idios",
-    version = "0.1.dev7",
+    version = VERSION,
     author = "Eldarion",
     author_email = "development@eldarion.com",
     description = "an extensible profile app designed to replace the profiles apps in Pinax",
