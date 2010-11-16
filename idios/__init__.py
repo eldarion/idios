@@ -1,4 +1,21 @@
-from django.conf import settings as django_settings
+VERSION = (0, 1, 0, "", "") # following PEP 386
+DEV_N = 8
+POST_N = 0
+
+def get_version():
+    version = "%s.%s" % (VERSION[0], VERSION[1])
+    if VERSION[2]:
+        version = "%s.%s" % (version, VERSION[2])
+    if VERSION[3] != "f":
+        version = "%s%s%s" % (version, VERSION[3], VERSION[4])
+        if DEV_N:
+            version = "%s.dev%s" % (version, DEV_N)
+    elif POST_N > 0:
+        version = "%s.post%s" % (version, POST_N)
+    return version
+
+
+__version__ = get_version()
 
 
 class IdiosSettings(object):
@@ -15,23 +32,25 @@ class IdiosSettings(object):
     
     """
     def __init__(self):
-        self.PROFILE_MODULES= []
+        from django.conf import settings
+        
+        self.PROFILE_MODULES = []
         
         modules = []
-        mod = getattr(django_settings, "AUTH_PROFILE_MODULE", None)
+        mod = getattr(settings, "AUTH_PROFILE_MODULE", None)
         if mod:
             modules.append(mod)
         
         self.DEFAULT_PROFILE_MODULE = None
         
-        for module in modules + getattr(django_settings, "IDIOS_PROFILE_MODULES", []):
+        for module in modules + getattr(settings, "IDIOS_PROFILE_MODULES", []):
             if self.DEFAULT_PROFILE_MODULE is None:
                 self.DEFAULT_PROFILE_MODULE = module
             self.PROFILE_MODULES.append(module)
         
         self.MULTIPLE_PROFILES = len(self.PROFILE_MODULES) > 1
         
-        self.PROFILE_BASE = getattr(django_settings, "IDIOS_PROFILE_BASE", None)
+        self.PROFILE_BASE = getattr(settings, "IDIOS_PROFILE_BASE", None)
 
 
 settings = IdiosSettings()
