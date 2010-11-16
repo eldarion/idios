@@ -1,8 +1,9 @@
-VERSION = (0, 1, 0, "", "") # following PEP 386
-DEV_N = 8
+VERSION = (0, 2, 0, "a", 1) # following PEP 386
+DEV_N = 1
 POST_N = 0
 
-def get_version():
+
+def build_version():
     version = "%s.%s" % (VERSION[0], VERSION[1])
     if VERSION[2]:
         version = "%s.%s" % (version, VERSION[2])
@@ -15,7 +16,7 @@ def get_version():
     return version
 
 
-__version__ = get_version()
+__version__ = build_version()
 
 
 try:
