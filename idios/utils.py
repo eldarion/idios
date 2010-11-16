@@ -39,7 +39,7 @@ def get_profile_base():
         module = idios.settings.PROFILE_BASE
     else:
         module = idios.settings.DEFAULT_PROFILE_MODULE
-    model = get_model(*module.split('.'))
+    model = get_model(*module.split("."))
     if model is None:
         raise SiteProfileNotAvailable
     return model
@@ -64,12 +64,12 @@ def get_profile_model(profile_slug=None):
         module = idios.settings.DEFAULT_PROFILE_MODULE
         if module is None:
             raise SiteProfileNotAvailable
-        model = get_model(*module.split('.'))
+        model = get_model(*module.split("."))
         if model is None:
             raise SiteProfileNotAvailable
     else:
         for module in idios.settings.PROFILE_MODULES:
-            model = get_model(*module.split('.'))
+            model = get_model(*module.split("."))
             if model and profile_slug == model.profile_slug:
                 break
             else:
@@ -89,5 +89,5 @@ def get_profile_form(profile_model=None):
     class _ProfileForm(forms.ModelForm):
         class Meta:
             model = profile_model
-            exclude = ("user",) # user will be filled in by the view.
+            exclude = ["user"] # user will be filled in by the view.
     return _ProfileForm

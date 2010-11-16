@@ -7,11 +7,16 @@ from idios.tests.utils import IdiosSettingsTestCase
 from idios.tests.models import SimpleProfile, SecretIdentityProfile
 
 
-__all__ = ["TestUtils", "TestUtilsNoProfile",
-           "TestUtilsMultiProfiles", "TestUtilsMultiProfilesBase"]
+__all__ = [
+    "TestUtils",
+    "TestUtilsNoProfile",
+    "TestUtilsMultiProfiles",
+    "TestUtilsMultiProfilesBase"
+]
 
 
 class TestUtils(TestCase):
+    
     def test_get_profile_base(self):
         """
         In a single-profile configuration, the profile base is the
@@ -36,15 +41,18 @@ class TestUtils(TestCase):
 
 
 class TestUtilsNoProfile(IdiosSettingsTestCase):
+    
     setting_overrides = {"AUTH_PROFILE_MODULE": None}
-        
+    
     def test_no_profile_model(self):
         self.assertRaises(SiteProfileNotAvailable, utils.get_profile_model)
 
 
 class TestUtilsMultiProfiles(IdiosSettingsTestCase):
-    setting_overrides = {"IDIOS_PROFILE_MODULES":
-                             ["tests.SecretIdentityProfile"]}
+    
+    setting_overrides = {
+        "IDIOS_PROFILE_MODULES": ["tests.SecretIdentityProfile"]
+    }
     
     def test_get_profile_base(self):
         """
@@ -71,10 +79,10 @@ class TestUtilsMultiProfiles(IdiosSettingsTestCase):
 
 
 class TestUtilsMultiProfilesBase(IdiosSettingsTestCase):
-    setting_overrides = {"IDIOS_PROFILE_MODULES":
-                             ["tests.SecretIdentityProfile"],
-                         "IDIOS_PROFILE_BASE":
-                             "tests.SecretIdentityProfile"}
+    setting_overrides = {
+        "IDIOS_PROFILE_MODULES": ["tests.SecretIdentityProfile"],
+        "IDIOS_PROFILE_BASE": "tests.SecretIdentityProfile"
+    }
     
     def test_get_profile_base(self):
         self.assert_(utils.get_profile_base() is SecretIdentityProfile)

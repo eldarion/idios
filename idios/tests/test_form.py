@@ -9,6 +9,7 @@ from idios.models import Profile
 
 
 class TestProfileForm(TestCase):
+    
     fixtures = ["test_idios.json"]
     
     def setUp(self):
@@ -28,4 +29,4 @@ class TestProfileForm(TestCase):
             "website": "httpasd://python.org"
         }
         form = ProfileForm(data)
-        self.assertEquals(False, form.is_valid())
+        self.assertEqual(False, form.is_valid())
