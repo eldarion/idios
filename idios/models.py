@@ -15,8 +15,9 @@ except ImportError:
 
 
 class ClassProperty(property):
-        def __get__(self, cls, owner):
-                return self.fget.__get__(None, owner)()
+    
+    def __get__(self, cls, owner):
+        return self.fget.__get__(None, owner)()
 
 
 class ProfileBase(models.Model):
@@ -24,7 +25,7 @@ class ProfileBase(models.Model):
     # @@@ could be unique=True if subclasses don't inherit a concrete base class
     # @@@ need to look at this more
     user = models.ForeignKey(User, verbose_name=_("user"))
-
+    
     class Meta:
         verbose_name = _("profile")
         verbose_name_plural = _("profiles")
@@ -38,15 +39,17 @@ class ProfileBase(models.Model):
         if idios.settings.MULTIPLE_PROFILES:
             # @@@ using PK here is kind of ugly. the alternative is to
             # generate a unique slug for each profile, which is tricky
-            kwargs = {"profile_slug": self.profile_slug,
-                      "profile_pk": self.pk}
+            kwargs = {
+                "profile_slug": self.profile_slug,
+                "profile_pk": self.pk
+            }
         else:
             kwargs = {"username": self.user.username}
         return reverse("profile_detail", kwargs=kwargs)
-
+    
     def _default_profile_slug(cls):
         return cls._meta.module_name
-
+    
     profile_slug = ClassProperty(classmethod(_default_profile_slug))
 
 

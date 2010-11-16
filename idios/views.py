@@ -44,13 +44,15 @@ def group_context(group, bridge):
         "group": group,
     }
 
+
 ALL_PROFILES = object()
+
 
 def profiles(request, profile_slug=None, **kwargs):
     """
     List all profiles of a given type (or the default type, if
     profile_slug is not given.)
-
+    
     If profile_slug is the ``ALL_PROFILES`` marker object, all
     profiles are listed.
     
@@ -123,7 +125,7 @@ def _profile(request, profile, other_user, **kwargs):
             is_me = False
     else:
         is_me = False
-
+    
     base_profile_class = get_profile_base()
     profiles = base_profile_class.objects.filter(user=other_user)
     

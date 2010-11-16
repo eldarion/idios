@@ -2,6 +2,7 @@ from django.conf.urls.defaults import *
 
 from idios.views import profiles, ALL_PROFILES
 
+
 urlpatterns = patterns("idios.views",
     url(r"^all/$", profiles, {"profile_slug": ALL_PROFILES}, name="profile_list_all"),
     url(r"^profile/(?P<username>[\w\._-]+)/$", "profile", name="profile_detail"),

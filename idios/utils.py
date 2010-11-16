@@ -14,14 +14,15 @@ from django.contrib.auth.models import SiteProfileNotAvailable
 
 import idios
 
+
 def get_profile_base():
     """
     Return a profile model class which is a concrete base class for
     all profile models (used for querying on all profiles).
-
+    
     If multiple-profiles are not in use, this will be the single
     profile model class itself.
-
+    
     If multiple-profiles are in use, this will be the model class
     referenced by the ``IDIOS_PROFILE_BASE`` setting.  If
     ``IDIOS_PROFILE_BASE`` is not set (some projects may not have a
@@ -29,10 +30,10 @@ def get_profile_base():
     profiles is not possible, and the all-profiles view will simply
     query the default profile model. (Idios' own ``ProfileBase`` is
     abstract and thus non-queryable.)
-
+    
     If the appropriate setting does not resolve to an actual model,
     raise ``django.contrib.auth.models.SiteProfileNotAvailable``.
-
+    
     """
     if idios.settings.MULTIPLE_PROFILES and idios.settings.PROFILE_BASE:
         module = idios.settings.PROFILE_BASE
@@ -49,12 +50,12 @@ def get_profile_model(profile_slug=None):
     Return the model class for the profile module identified by the
     given ``profile_slug``, as defined in the ``AUTH_PROFILE_MODULE``
     or ``IDIOS_PROFILE_MODULES`` settings.
-
+    
     If ``profile_slug`` is not provided, return the default profile
     model.
-
+    
     If no matching profile model is found, return None.
-
+    
     If no default profile model is found, raise
     ``django.contrib.auth.models.SiteProfileNotAvailable``.
     
