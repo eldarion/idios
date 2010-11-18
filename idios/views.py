@@ -99,7 +99,7 @@ def profile_by_pk(request, profile_pk, profile_slug, **kwargs):
         raise Http404
     profile = get_object_or_404(profile_class, pk=profile_pk)
     page_user = profile.user
-    return _profile(request, profile, page_user, **kwargs)
+    return base_profile(request, profile, page_user, **kwargs)
 
 
 def profile(request, username, **kwargs):
@@ -107,10 +107,10 @@ def profile(request, username, **kwargs):
     page_user = get_object_or_404(User, username=username)
     profile_class = get_profile_model()
     profile = get_object_or_404(profile_class, user=page_user)
-    return _profile(request, profile, page_user, **kwargs)
+    return base_profile(request, profile, page_user, **kwargs)
 
 
-def _profile(request, profile, page_user, **kwargs):
+def base_profile(request, profile, page_user, **kwargs):
     template_name = kwargs.pop("template_name", "idios/profile.html")
     
     group, bridge = group_and_bridge(kwargs)
