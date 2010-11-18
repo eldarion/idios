@@ -98,28 +98,25 @@ def profile_by_pk(request, profile_pk, profile_slug, **kwargs):
     if profile_class is None:
         raise Http404
     profile = get_object_or_404(profile_class, pk=profile_pk)
-    other_user = profile.user
-    return _profile(request, profile, other_user, **kwargs)
+    page_user = profile.user
+    return _profile(request, profile, page_user, **kwargs)
 
 
 def profile(request, username, **kwargs):
-    """
-    profile
-    """
     # @@@ not group-aware (need to look at moving to profile model)
-    other_user = get_object_or_404(User, username=username)
+    page_user = get_object_or_404(User, username=username)
     profile_class = get_profile_model()
-    profile = get_object_or_404(profile_class, user=other_user)
-    return _profile(request, profile, other_user, **kwargs)
+    profile = get_object_or_404(profile_class, user=page_user)
+    return _profile(request, profile, page_user, **kwargs)
 
 
-def _profile(request, profile, other_user, **kwargs):
+def _profile(request, profile, page_user, **kwargs):
     template_name = kwargs.pop("template_name", "idios/profile.html")
     
     group, bridge = group_and_bridge(kwargs)
     
     if request.user.is_authenticated():
-        if request.user == other_user:
+        if request.user == page_user:
             is_me = True
         else:
             is_me = False
@@ -127,12 +124,12 @@ def _profile(request, profile, other_user, **kwargs):
         is_me = False
     
     base_profile_class = get_profile_base()
-    profiles = base_profile_class.objects.filter(user=other_user)
+    profiles = base_profile_class.objects.filter(user=page_user)
     
     ctx = group_context(group, bridge)
     ctx.update({
         "is_me": is_me,
-        "other_user": other_user,
+        "page_user": page_user,
         "profile": profile,
         "profiles": profiles,
     })
