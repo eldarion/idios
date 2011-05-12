@@ -9,6 +9,7 @@ from django.utils.translation import ugettext
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+import cbv as generic
 
 from idios.utils import get_profile_form, get_profile_model, get_profile_base
 
@@ -45,51 +46,62 @@ def group_context(group, bridge):
     }
 
 
-ALL_PROFILES = object()
-
-
-def profiles(request, profile_slug=None, **kwargs):
+class ProfilesListView(generic.ListView):
     """
     List all profiles of a given type (or the default type, if
     profile_slug is not given.)
     
-    If profile_slug is the ``ALL_PROFILES`` marker object, all
-    profiles are listed.
-    
+    If all_profiles is set to True, all profiles are listed.
     """
-    template_name = kwargs.pop("template_name", "idios/profiles.html")
+    template_name = "idios/profiles.html"
+    context_object_name = "profiles"
+    all_profiles = False
     
-    group, bridge = group_and_bridge(kwargs)
+    def get_model_class(self):
+        # @@@ not group-aware (need to look at moving to profile model)
+        profile_slug = self.kwargs.get("profile_slug", None)
+
+        if self.all_profiles:
+            profile_class = get_profile_base()
+        else:
+            profile_class = get_profile_model(profile_slug)
+
+        if profile_class is None:
+            raise Http404
+
+        return profile_class
+
+    def get_queryset(self):
+        profiles = self.get_model_class().objects.select_related().\
+                order_by("-date_joined")
+        
+        search_terms = self.request.GET.get("search", "")
+        order = self.request.GET.get("order", "date")
+        
+        if search_terms:
+            profiles = profiles.filter(user__username__icontains=search_terms)
+        if order == "date":
+            profiles = profiles.order_by("-user__date_joined")
+        elif order == "name":
+            profiles = profiles.order_by("user__username")
+
+        return profiles
     
-    # @@@ not group-aware (need to look at moving to profile model)
-    if profile_slug is ALL_PROFILES:
-        profile_class = get_profile_base()
-    else:
-        profile_class = get_profile_model(profile_slug)
-    if profile_class is None:
-        raise Http404
-    profiles = profile_class.objects.select_related().order_by("-date_joined")
-    
-    search_terms = request.GET.get("search", "")
-    order = request.GET.get("order")
-    
-    if not order:
-        order = "date"
-    if search_terms:
-        profiles = profiles.filter(user__username__icontains=search_terms)
-    if order == "date":
-        profiles = profiles.order_by("-user__date_joined")
-    elif order == "name":
-        profiles = profiles.order_by("user__username")
-    
-    ctx = group_context(group, bridge)
-    ctx.update({
-        "profiles": profiles,
-        "order": order,
-        "search_terms": search_terms,
-    })
-    
-    return render_to_response(template_name, RequestContext(request, ctx))
+    def get_context_data(self, **kwargs):
+        group, bridge = group_and_bridge(self.kwargs)
+
+        search_terms = self.request.GET.get("search", "")
+        order = self.request.GET.get("order", "date")
+
+        ctx = group_context(group, bridge)
+        ctx.update({
+            "order": order,
+            "search_terms": search_terms,
+        })
+        ctx.update(super(ProfilesListView, self).\
+                get_context_data(**kwargs))
+
+        return ctx
 
 
 def profile_by_pk(request, profile_pk, profile_slug, **kwargs):

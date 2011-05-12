@@ -16,6 +16,12 @@ if not settings.configured:
             "idios",
             "idios.tests",
         ],
+        MIDDLEWARE_CLASSES = [
+            'django.middleware.common.CommonMiddleware',
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+            'cbv.middleware.DeferredRenderingMiddleware',
+        ],
         AUTH_PROFILE_MODULE="tests.SimpleProfile",
         ROOT_URLCONF="idios.tests.urls"
     )
