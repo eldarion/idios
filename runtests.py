@@ -4,7 +4,17 @@ import sys
 from os.path import dirname, abspath
 
 from django.conf import settings
+from django import VERSION as DJANGO_VERSION
 
+
+middleware = [
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+]
+
+if DJANGO_VERSION < (1,3):
+    middleware.append('cbv.middleware.DeferredRenderingMiddleware')
 
 if not settings.configured:
     settings.configure(
@@ -16,12 +26,7 @@ if not settings.configured:
             "idios",
             "idios.tests",
         ],
-        MIDDLEWARE_CLASSES = [
-            'django.middleware.common.CommonMiddleware',
-            'django.contrib.sessions.middleware.SessionMiddleware',
-            'django.contrib.auth.middleware.AuthenticationMiddleware',
-            'cbv.middleware.DeferredRenderingMiddleware',
-        ],
+        MIDDLEWARE_CLASSES=middleware,
         AUTH_PROFILE_MODULE="tests.SimpleProfile",
         ROOT_URLCONF="idios.tests.urls"
     )

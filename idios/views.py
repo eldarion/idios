@@ -9,7 +9,11 @@ from django.utils.translation import ugettext
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-import cbv as generic
+
+try:
+    from django.views.generic import ListView
+except ImportError:
+    from cbv import ListView
 
 from idios.utils import get_profile_form, get_profile_model, get_profile_base
 
@@ -46,7 +50,7 @@ def group_context(group, bridge):
     }
 
 
-class ProfilesListView(generic.ListView):
+class ProfilesListView(ListView):
     """
     List all profiles of a given type (or the default type, if
     profile_slug is not given.)
