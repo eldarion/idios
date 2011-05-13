@@ -98,8 +98,9 @@ class ProfilesListView(generic.ListView):
             "order": order,
             "search_terms": search_terms,
         })
-        ctx.update(super(ProfilesListView, self).\
-                get_context_data(**kwargs))
+        ctx.update(
+            super(ProfilesListView, self).get_context_data(**kwargs)
+        )
 
         return ctx
 
