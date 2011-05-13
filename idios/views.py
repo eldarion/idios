@@ -12,9 +12,10 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
 
 try:
-    from django.views.generic import ListView, DetailView, CreateView
+    from django.views.generic \
+            import ListView, DetailView, CreateView, UpdateView
 except ImportError:
-    from cbv import ListView, DetailView, CreateView
+    from cbv import ListView, DetailView, CreateView, UpdateView
 
 from idios.utils import get_profile_form, get_profile_model, get_profile_base
 
@@ -158,7 +159,7 @@ class ProfileDetailView(DetailView):
     
 
 #NOTE: this lacks backwards compatibility in the sense that the form is
-# passed thru the context as 'form' instead of 'profile_form'
+# passed in the context as 'form' instead of 'profile_form'
 class ProfileCreateView(CreateView):
 
     template_name = "idios/profile_create.html"
@@ -215,45 +216,56 @@ class ProfileCreateView(CreateView):
         return super(ProfileCreateView, self).dispatch(*args, **kwargs)
 
 
-@login_required
-def profile_edit(request, profile_slug=None, **kwargs):
-    """
-    profile_edit
-    """
-    template_name = kwargs.pop("template_name", "idios/profile_edit.html")
-    form_class = kwargs.pop("form_class", None)
+class ProfileUpdateView(UpdateView):
+
+    template_name = "idios/profile_edit.html"
+    template_name_facebox = "idios/profile_edit_facebox.html"
+    context_object_name = "profile"
     
-    if request.is_ajax():
-        template_name = kwargs.get(
-            "template_name_facebox",
-            "idios/profile_edit_facebox.html"
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return [self.template_name_facebox]
+        else:
+            return [self.template_name]
+    
+    def get_form_class(self):
+
+        if self.form_class:
+            return self.form_class
+
+        profile_class = get_profile_model(self.kwargs.get('profile_slug'))
+
+        if profile_class is None:
+            raise Http404
+
+        return get_profile_form(profile_class)
+
+    def get_object(self, queryset=None):
+
+        profile_class = get_profile_model(self.kwargs.get('profile_slug'))
+        if profile_class is None:
+            raise Http404
+
+        profile = profile_class.objects.get(user=self.request.user)
+        return profile
+
+    def get_context_data(self, **kwargs):
+
+        group, bridge = group_and_bridge(self.kwargs)
+        ctx = group_context(group, bridge)
+        ctx.update(
+            super(ProfileUpdateView, self).get_context_data(**kwargs)
         )
+        return ctx
+
+    def get_success_url(self):
+
+        if self.success_url:
+            return self.success_url
+
+        group, bridge = group_and_bridge(self.kwargs)
+        return self.object.get_absolute_url(group=group)
     
-    group, bridge = group_and_bridge(kwargs)
-    
-    # @@@ not group-aware (need to look at moving to profile model)
-    profile_class = get_profile_model(profile_slug)
-    if profile_class is None:
-        raise Http404
-    profile = profile_class.objects.get(user=request.user)
-    
-    if form_class is None:
-        form_class = get_profile_form(profile_class)
-    
-    if request.method == "POST":
-        profile_form = form_class(request.POST, instance=profile)
-        if profile_form.is_valid():
-            profile = profile_form.save(commit=False)
-            profile.user = request.user
-            profile.save()
-            return HttpResponseRedirect(profile.get_absolute_url(group=group))
-    else:
-        profile_form = form_class(instance=profile)
-    
-    ctx = group_context(group, bridge)
-    ctx.update({
-        "profile": profile,
-        "profile_form": profile_form,
-    })
-    
-    return render_to_response(template_name, RequestContext(request, ctx))
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ProfileUpdateView, self).dispatch(*args, **kwargs)
