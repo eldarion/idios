@@ -11,9 +11,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
 try:
-    from django.views.generic import ListView
+    from django.views.generic import ListView, DetailView
 except ImportError:
-    from cbv import ListView
+    from cbv import ListView, DetailView
 
 from idios.utils import get_profile_form, get_profile_model, get_profile_base
 
@@ -50,7 +50,7 @@ def group_context(group, bridge):
     }
 
 
-class ProfilesListView(ListView):
+class ProfileListView(ListView):
     """
     List all profiles of a given type (or the default type, if
     profile_slug is not given.)
@@ -62,6 +62,7 @@ class ProfilesListView(ListView):
     all_profiles = False
     
     def get_model_class(self):
+
         # @@@ not group-aware (need to look at moving to profile model)
         profile_slug = self.kwargs.get("profile_slug", None)
 
@@ -76,6 +77,7 @@ class ProfilesListView(ListView):
         return profile_class
 
     def get_queryset(self):
+
         profiles = self.get_model_class().objects.select_related().\
                 order_by("-date_joined")
         
@@ -92,6 +94,7 @@ class ProfilesListView(ListView):
         return profiles
     
     def get_context_data(self, **kwargs):
+
         group, bridge = group_and_bridge(self.kwargs)
 
         search_terms = self.request.GET.get("search", "")
@@ -103,56 +106,55 @@ class ProfilesListView(ListView):
             "search_terms": search_terms,
         })
         ctx.update(
-            super(ProfilesListView, self).get_context_data(**kwargs)
+            super(ProfileListView, self).get_context_data(**kwargs)
         )
 
         return ctx
 
 
-def profile_by_pk(request, profile_pk, profile_slug, **kwargs):
-    # @@@ not group-aware (need to look at moving to profile model)
-    profile_class = get_profile_model(profile_slug)
-    if profile_class is None:
-        raise Http404
-    profile = get_object_or_404(profile_class, pk=profile_pk)
-    page_user = profile.user
-    return base_profile(request, profile, page_user, **kwargs)
+class ProfileDetailView(DetailView):
 
-
-def profile(request, username, **kwargs):
-    # @@@ not group-aware (need to look at moving to profile model)
-    page_user = get_object_or_404(User, username=username)
-    profile_class = get_profile_model()
-    profile = get_object_or_404(profile_class, user=page_user)
-    return base_profile(request, profile, page_user, **kwargs)
-
-
-def base_profile(request, profile, page_user, **kwargs):
-    template_name = kwargs.pop("template_name", "idios/profile.html")
+    template_name = "idios/profile.html"
+    context_object_name = "profile"
     
-    group, bridge = group_and_bridge(kwargs)
-    
-    if request.user.is_authenticated():
-        if request.user == page_user:
-            is_me = True
+    def get_object(self):
+
+        username = self.kwargs.get('username')
+        profile_class = get_profile_model(self.kwargs.get('profile_slug'))
+
+        if profile_class is None:
+            raise Http404
+
+        if username:
+            self.page_user = get_object_or_404(User, username=username)
+            return get_object_or_404(profile_class, user=self.page_user)
         else:
-            is_me = False
-    else:
-        is_me = False
+            profile = get_object_or_404(
+                profile_class, pk=self.kwargs.get('profile_pk')
+            )
+            self.page_user = profile.user
+            return profile
     
-    base_profile_class = get_profile_base()
-    profiles = base_profile_class.objects.filter(user=page_user)
-    
-    ctx = group_context(group, bridge)
-    ctx.update({
-        "is_me": is_me,
-        "page_user": page_user,
-        "profile": profile,
-        "profiles": profiles,
-    })
-    
-    return render_to_response(template_name, RequestContext(request, ctx))
+    def get_context_data(self, **kwargs):
 
+        base_profile_class = get_profile_base()
+        profiles = base_profile_class.objects.filter(user=self.page_user)
+
+        group, bridge = group_and_bridge(kwargs)
+        is_me = self.request.user == self.page_user
+
+        ctx = group_context(group, bridge)
+        ctx.update({
+            "is_me": is_me,
+            "page_user": self.page_user,
+            "profiles": profiles,
+        })
+        ctx.update(
+            super(ProfileDetailView, self).get_context_data(**kwargs)
+        )
+
+        return ctx
+    
 
 @login_required
 def profile_create(request, profile_slug=None, **kwargs):
