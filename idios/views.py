@@ -62,7 +62,7 @@ class ProfileListView(ListView):
     template_name = "idios/profiles.html"
     context_object_name = "profiles"
     all_profiles = False
-    
+
     def get_model_class(self):
 
         # @@@ not group-aware (need to look at moving to profile model)
@@ -158,12 +158,16 @@ class ProfileDetailView(DetailView):
         return ctx
     
 
-#NOTE: this lacks backwards compatibility in the sense that the form is
-# passed in the context as 'form' instead of 'profile_form'
 class ProfileCreateView(CreateView):
 
     template_name = "idios/profile_create.html"
     template_name_facebox = "idios/profile_create_facebox.html"
+
+    def get(self, request, *args, **kwargs):
+        """ add `profile_form` to context for backwards compatibility """
+        response = super(ProfileCreateView, self).get(request, *args, **kwargs)
+        response.context_data['profile_form'] = response.context_data['form']
+        return response
     
     def get_template_names(self):
 
@@ -221,6 +225,12 @@ class ProfileUpdateView(UpdateView):
     template_name = "idios/profile_edit.html"
     template_name_facebox = "idios/profile_edit_facebox.html"
     context_object_name = "profile"
+
+    def get(self, request, *args, **kwargs):
+        """ add `profile_form` to context for backwards compatibility """
+        response = super(ProfileUpdateView, self).get(request, *args, **kwargs)
+        response.context_data['profile_form'] = response.context_data['form']
+        return response
     
     def get_template_names(self):
         if self.request.is_ajax():
