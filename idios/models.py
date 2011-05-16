@@ -46,7 +46,7 @@ class ProfileBase(models.Model):
         else:
             kwargs = {"username": self.user.username}
         return reverse("profile_detail", kwargs=kwargs)
-    
+
     def _default_profile_slug(cls):
         return cls._meta.module_name
     

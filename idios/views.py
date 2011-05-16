@@ -163,12 +163,6 @@ class ProfileCreateView(CreateView):
     template_name = "idios/profile_create.html"
     template_name_facebox = "idios/profile_create_facebox.html"
 
-    def get(self, request, *args, **kwargs):
-        """ add `profile_form` to context for backwards compatibility """
-        response = super(ProfileCreateView, self).get(request, *args, **kwargs)
-        response.context_data['profile_form'] = response.context_data['form']
-        return response
-    
     def get_template_names(self):
 
         if self.request.is_ajax():
@@ -205,6 +199,7 @@ class ProfileCreateView(CreateView):
         ctx.update(
             super(ProfileCreateView, self).get_context_data(**kwargs)
         )
+        ctx['profile_form'] = ctx['form']
         return ctx
 
     def get_success_url(self):
@@ -226,12 +221,6 @@ class ProfileUpdateView(UpdateView):
     template_name_facebox = "idios/profile_edit_facebox.html"
     context_object_name = "profile"
 
-    def get(self, request, *args, **kwargs):
-        """ add `profile_form` to context for backwards compatibility """
-        response = super(ProfileUpdateView, self).get(request, *args, **kwargs)
-        response.context_data['profile_form'] = response.context_data['form']
-        return response
-    
     def get_template_names(self):
         if self.request.is_ajax():
             return [self.template_name_facebox]
@@ -266,6 +255,7 @@ class ProfileUpdateView(UpdateView):
         ctx.update(
             super(ProfileUpdateView, self).get_context_data(**kwargs)
         )
+        ctx['profile_form'] = ctx['form']
         return ctx
 
     def get_success_url(self):
