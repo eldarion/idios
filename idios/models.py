@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
 import idios
-from idios.utils import get_profile_model
+from idios.utils import get_profile_model, get_profile_form
 
 try:
     from pinax.apps.account.signals import user_logged_in
@@ -46,6 +46,10 @@ class ProfileBase(models.Model):
         else:
             kwargs = {"username": self.user.username}
         return reverse("profile_detail", kwargs=kwargs)
+
+    @classmethod
+    def get_form(cls):
+        return get_profile_form(cls)
 
     def _default_profile_slug(cls):
         return cls._meta.module_name

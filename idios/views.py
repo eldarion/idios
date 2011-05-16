@@ -180,7 +180,7 @@ class ProfileCreateView(CreateView):
         if profile_class is None:
             raise Http404
 
-        return get_profile_form(profile_class)
+        return profile_class.get_form()
 
     def form_valid(self, form):
 
@@ -237,7 +237,7 @@ class ProfileUpdateView(UpdateView):
         if profile_class is None:
             raise Http404
 
-        return get_profile_form(profile_class)
+        return profile_class.get_form()
 
     def get_object(self, queryset=None):
 
