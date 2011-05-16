@@ -15,9 +15,14 @@ try:
     from django.views.generic \
             import ListView, DetailView, CreateView, UpdateView
 except ImportError:
-    from cbv import ListView, DetailView, CreateView, UpdateView
+    try:
+        from cbv import ListView, DetailView, CreateView, UpdateView
+    except ImportError:
+        raise ImportError("It appears you are running a version of Django < " \
+            "1.3. To use idios with this version of Django, install " \
+            "django-cbv==0.1.5.")
 
-from idios.utils import get_profile_form, get_profile_model, get_profile_base
+from idios.utils import get_profile_model, get_profile_base
 
 
 if "notification" in settings.INSTALLED_APPS:
