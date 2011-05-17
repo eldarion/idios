@@ -47,6 +47,8 @@ Hook up idios to your URLconf:
         url(r"^profiles/", include("idios.urls"))
     )
 
+If you are running a version of Django < 1.3, you also need to install django-cbv_.
+
 This is largely all you need to do to get idios setup in your project.
 Continue reading on to learn more about how to use idios.
 
@@ -100,3 +102,4 @@ Here is what how your profile model might look like:
 .. _Django: http://www.djangoproject.com/
 .. _Pinax: http://pinaxproject.com/
 .. _pip: http://pip.openplans.org/
+.. _django-cbv: https://github.com/brutasse/django-cbv
