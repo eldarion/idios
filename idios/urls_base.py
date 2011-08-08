@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import *
+
 from idios.views import ProfileListView, ProfileCreateView, ProfileUpdateView
 
 
