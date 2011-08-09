@@ -1,5 +1,5 @@
 VERSION = (0, 2, 0, "a", 1) # following PEP 386
-DEV_N = 2
+DEV_N = 3
 POST_N = 0
 
 
