@@ -163,12 +163,12 @@ class ProfileDetailView(DetailView):
 class ProfileCreateView(CreateView):
     
     template_name = "idios/profile_create.html"
-    template_name_facebox = "idios/profile_create_facebox.html"
+    template_name_ajax = "idios/profile_create_ajax.html"
     
     def get_template_names(self):
         
         if self.request.is_ajax():
-            return [self.template_name_facebox]
+            return [self.template_name_ajax]
         else:
             return [self.template_name]
     
@@ -220,12 +220,12 @@ class ProfileCreateView(CreateView):
 class ProfileUpdateView(UpdateView):
     
     template_name = "idios/profile_edit.html"
-    template_name_facebox = "idios/profile_edit_facebox.html"
+    template_name_ajax = "idios/profile_edit_ajax.html"
     context_object_name = "profile"
     
     def get_template_names(self):
         if self.request.is_ajax():
-            return [self.template_name_facebox]
+            return [self.template_name_ajax]
         else:
             return [self.template_name]
     
