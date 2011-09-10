@@ -2,6 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
 
 from django.contrib.auth.decorators import login_required
@@ -221,6 +222,7 @@ class ProfileUpdateView(UpdateView):
     
     template_name = "idios/profile_edit.html"
     template_name_ajax = "idios/profile_edit_ajax.html"
+    template_name_ajax_success = "idios/profile_edit_ajax_success.html"
     context_object_name = "profile"
     
     def get_template_names(self):
@@ -260,8 +262,19 @@ class ProfileUpdateView(UpdateView):
         ctx["profile_form"] = ctx["form"]
         return ctx
     
-    def get_success_url(self):
+    def form_valid(self, form):
+        response = super(ProfileUpdateView, self).form_valid(form)
+        
+        if self.request.is_ajax():
+            return TemplateResponse(
+                request = self.request,
+                template = self.template_name_ajax_success,
+            )
+        else:
+            return response
     
+    def get_success_url(self):
+        
         if self.success_url:
             return self.success_url
         
