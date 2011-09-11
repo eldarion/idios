@@ -1,8 +1,10 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-from django.http import Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.template.response import TemplateResponse
+from django.template import RequestContext
+from django.template.loader import render_to_string
+from django.utils import simplejson as json
 from django.utils.decorators import method_decorator
 
 from django.contrib.auth.decorators import login_required
@@ -232,7 +234,6 @@ class ProfileUpdateView(UpdateView):
             return [self.template_name]
     
     def get_form_class(self):
-        
         if self.form_class:
             return self.form_class
         
@@ -244,7 +245,6 @@ class ProfileUpdateView(UpdateView):
         return profile_class.get_form()
     
     def get_object(self, queryset=None):
-        
         profile_class = get_profile_model(self.kwargs.get("profile_slug"))
         if profile_class is None:
             raise Http404
@@ -253,7 +253,6 @@ class ProfileUpdateView(UpdateView):
         return profile
     
     def get_context_data(self, **kwargs):
-        
         group, bridge = group_and_bridge(self.kwargs)
         ctx = group_context(group, bridge)
         ctx.update(
@@ -263,15 +262,27 @@ class ProfileUpdateView(UpdateView):
         return ctx
     
     def form_valid(self, form):
-        response = super(ProfileUpdateView, self).form_valid(form)
-        
+        self.object = form.save()
         if self.request.is_ajax():
-            return TemplateResponse(
-                request = self.request,
-                template = self.template_name_ajax_success,
-            )
+            data = {
+                "status": "success",
+                "location": self.object.get_absolute_url(),
+                "html": render_to_string(self.template_name_ajax_success),
+            }
+            return HttpResponse(json.dumps(data), content_type="application/json")
         else:
-            return response
+            return HttpResponseRedirect(self.get_success_url())
+    
+    def form_invalid(self, form):
+        if self.request.is_ajax():
+            ctx = RequestContext(self.request, self.get_context_data(form=form))
+            data = {
+                "status": "failed",
+                "html": render_to_string(self.template_name_ajax, ctx),
+            }
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
     
     def get_success_url(self):
         
@@ -283,4 +294,8 @@ class ProfileUpdateView(UpdateView):
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(ProfileUpdateView, self).dispatch(*args, **kwargs)
+        try:
+            return super(ProfileUpdateView, self).dispatch(*args, **kwargs)
+        except:
+            import sys, traceback
+            traceback.print_exc()
