@@ -22,6 +22,7 @@ except ImportError:
             "django-cbv==0.1.5."
         )
 
+import idios
 from idios.utils import get_profile_model, get_profile_base
 
 
@@ -126,19 +127,16 @@ class ProfileDetailView(DetailView):
     
     def get_object(self):
         
-        username = self.kwargs.get("username")
         profile_class = get_profile_model(self.kwargs.get("profile_slug"))
         
         if profile_class is None:
             raise Http404
         
-        if username:
-            self.page_user = get_object_or_404(User, username=username)
+        if idios.settings.USE_USERNAME:
+            self.page_user = get_object_or_404(User, username=self.kwargs["username"])
             return get_object_or_404(profile_class, user=self.page_user)
         else:
-            profile = get_object_or_404(
-                profile_class, pk=self.kwargs.get("profile_pk")
-            )
+            profile = get_object_or_404(profile_class, pk=self.kwargs["pk"])
             self.page_user = profile.user
             return profile
     
@@ -156,9 +154,7 @@ class ProfileDetailView(DetailView):
             "page_user": self.page_user,
             "profiles": profiles,
         })
-        ctx.update(
-            super(ProfileDetailView, self).get_context_data(**kwargs)
-        )
+        ctx.update(super(ProfileDetailView, self).get_context_data(**kwargs))
         
         return ctx
 
@@ -201,9 +197,7 @@ class ProfileCreateView(CreateView):
         group, bridge = group_and_bridge(self.kwargs)
         
         ctx = group_context(group, bridge)
-        ctx.update(
-            super(ProfileCreateView, self).get_context_data(**kwargs)
-        )
+        ctx.update(super(ProfileCreateView, self).get_context_data(**kwargs))
         ctx["profile_form"] = ctx["form"]
         return ctx
     
@@ -246,6 +240,7 @@ class ProfileUpdateView(UpdateView):
     
     def get_object(self, queryset=None):
         profile_class = get_profile_model(self.kwargs.get("profile_slug"))
+        
         if profile_class is None:
             raise Http404
         
@@ -255,9 +250,7 @@ class ProfileUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         group, bridge = group_and_bridge(self.kwargs)
         ctx = group_context(group, bridge)
-        ctx.update(
-            super(ProfileUpdateView, self).get_context_data(**kwargs)
-        )
+        ctx.update(super(ProfileUpdateView, self).get_context_data(**kwargs))
         ctx["profile_form"] = ctx["form"]
         return ctx
     
@@ -285,10 +278,8 @@ class ProfileUpdateView(UpdateView):
             return self.render_to_response(self.get_context_data(form=form))
     
     def get_success_url(self):
-        
         if self.success_url:
             return self.success_url
-        
         group, bridge = group_and_bridge(self.kwargs)
         return self.object.get_absolute_url(group=group)
     

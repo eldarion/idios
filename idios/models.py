@@ -42,10 +42,13 @@ class ProfileBase(models.Model):
             # generate a unique slug for each profile, which is tricky
             kwargs = {
                 "profile_slug": self.profile_slug,
-                "profile_pk": self.pk
+                "pk": self.pk
             }
         else:
-            kwargs = {"username": self.user.username}
+            if idios.settings.USE_USERNAME:
+                kwargs = {"username": self.user.username}
+            else:
+                kwargs = {"pk": self.pk}
         return reverse("profile_detail", kwargs=kwargs)
     
     @classmethod

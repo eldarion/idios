@@ -1,5 +1,5 @@
-VERSION = (0, 2, 0, "a", 1) # following PEP 386
-DEV_N = 0
+VERSION = (0, 2, 0, "a", 2) # following PEP 386
+DEV_N = 1
 POST_N = 0
 
 
@@ -66,5 +66,6 @@ if django:
             
             self.MULTIPLE_PROFILES = len(self.PROFILE_MODULES) > 1
             self.PROFILE_BASE = getattr(settings, "IDIOS_PROFILE_BASE", None)
+            self.USE_USERNAME = getattr(settings, "IDIOS_USE_USERNAME", True)
     
     settings = IdiosLazySettings()
