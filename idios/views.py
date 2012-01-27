@@ -26,32 +26,6 @@ import idios
 from idios.utils import get_profile_model, get_profile_base
 
 
-def group_and_bridge(kwargs):
-    """
-    Given kwargs from the view (with view specific keys popped) pull out the
-    bridge and fetch group from database.
-    """
-    
-    bridge = kwargs.pop("bridge", None)
-    
-    if bridge:
-        try:
-            group = bridge.get_group(**kwargs)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
-    
-    return group, bridge
-
-
-def group_context(group, bridge):
-    # @@@ use bridge
-    return {
-        "group": group,
-    }
-
-
 class ProfileListView(ListView):
     """
     List all profiles of a given type (or the default type, if
@@ -64,8 +38,6 @@ class ProfileListView(ListView):
     all_profiles = False
     
     def get_model_class(self):
-        
-        # @@@ not group-aware (need to look at moving to profile model)
         profile_slug = self.kwargs.get("profile_slug", None)
         
         if self.all_profiles:
@@ -79,7 +51,6 @@ class ProfileListView(ListView):
         return profile_class
     
     def get_queryset(self):
-        
         profiles = self.get_model_class().objects.select_related()
         profiles = profiles.order_by("-date_joined")
         
@@ -96,20 +67,14 @@ class ProfileListView(ListView):
         return profiles
     
     def get_context_data(self, **kwargs):
-        
-        group, bridge = group_and_bridge(self.kwargs)
-        
         search_terms = self.request.GET.get("search", "")
         order = self.request.GET.get("order", "date")
         
-        ctx = group_context(group, bridge)
-        ctx.update({
+        ctx = {
             "order": order,
             "search_terms": search_terms,
-        })
-        ctx.update(
-            super(ProfileListView, self).get_context_data(**kwargs)
-        )
+        }
+        ctx.update(super(ProfileListView, self).get_context_data(**kwargs))
         
         return ctx
 
@@ -120,7 +85,6 @@ class ProfileDetailView(DetailView):
     context_object_name = "profile"
     
     def get_object(self):
-        
         profile_class = get_profile_model(self.kwargs.get("profile_slug"))
         
         if profile_class is None:
@@ -135,19 +99,16 @@ class ProfileDetailView(DetailView):
             return profile
     
     def get_context_data(self, **kwargs):
-        
         base_profile_class = get_profile_base()
         profiles = base_profile_class.objects.filter(user=self.page_user)
         
-        group, bridge = group_and_bridge(kwargs)
         is_me = self.request.user == self.page_user
         
-        ctx = group_context(group, bridge)
-        ctx.update({
+        ctx = {
             "is_me": is_me,
             "page_user": self.page_user,
             "profiles": profiles,
-        })
+        }
         ctx.update(super(ProfileDetailView, self).get_context_data(**kwargs))
         
         return ctx
@@ -159,14 +120,12 @@ class ProfileCreateView(CreateView):
     template_name_ajax = "idios/profile_create_ajax.html"
     
     def get_template_names(self):
-        
         if self.request.is_ajax():
             return [self.template_name_ajax]
         else:
             return [self.template_name]
     
     def get_form_class(self):
-        
         if self.form_class:
             return self.form_class
         
@@ -178,7 +137,6 @@ class ProfileCreateView(CreateView):
         return profile_class.get_form()
     
     def form_valid(self, form):
-        
         profile = form.save(commit=False)
         profile.user = self.request.user
         profile.save()
@@ -187,21 +145,14 @@ class ProfileCreateView(CreateView):
         return HttpResponseRedirect(self.get_success_url())
     
     def get_context_data(self, **kwargs):
-        
-        group, bridge = group_and_bridge(self.kwargs)
-        
-        ctx = group_context(group, bridge)
-        ctx.update(super(ProfileCreateView, self).get_context_data(**kwargs))
+        ctx = super(ProfileCreateView, self).get_context_data(**kwargs)
         ctx["profile_form"] = ctx["form"]
         return ctx
     
     def get_success_url(self):
-        
         if self.success_url:
             return self.success_url
-        
-        group, bridge = group_and_bridge(self.kwargs)
-        return self.object.get_absolute_url(group=group)
+        return self.object.get_absolute_url()
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -242,9 +193,7 @@ class ProfileUpdateView(UpdateView):
         return profile
     
     def get_context_data(self, **kwargs):
-        group, bridge = group_and_bridge(self.kwargs)
-        ctx = group_context(group, bridge)
-        ctx.update(super(ProfileUpdateView, self).get_context_data(**kwargs))
+        ctx = super(ProfileUpdateView, self).get_context_data(**kwargs)
         ctx["profile_form"] = ctx["form"]
         return ctx
     
@@ -274,8 +223,7 @@ class ProfileUpdateView(UpdateView):
     def get_success_url(self):
         if self.success_url:
             return self.success_url
-        group, bridge = group_and_bridge(self.kwargs)
-        return self.object.get_absolute_url(group=group)
+        return self.object.get_absolute_url()
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):

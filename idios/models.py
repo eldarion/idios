@@ -35,8 +35,7 @@ class ProfileBase(models.Model):
     def __unicode__(self):
         return self.user.username
     
-    def get_absolute_url(self, group=None):
-        # @@@ make group-aware
+    def get_absolute_url(self):
         if idios.settings.MULTIPLE_PROFILES:
             # @@@ using PK here is kind of ugly. the alternative is to
             # generate a unique slug for each profile, which is tricky
