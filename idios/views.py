@@ -92,11 +92,15 @@ class ProfileDetailView(DetailView):
         
         if idios.settings.USE_USERNAME:
             self.page_user = get_object_or_404(User, username=self.kwargs["username"])
-            return get_object_or_404(profile_class, user=self.page_user)
+            profile = get_object_or_404(profile_class, user=self.page_user)
         else:
             profile = get_object_or_404(profile_class, pk=self.kwargs["pk"])
             self.page_user = profile.user
-            return profile
+        
+        if not self.request.user.has_perm("can_view", obj=profile):
+            raise Http404
+        
+        return profile
     
     def get_context_data(self, **kwargs):
         base_profile_class = get_profile_base()
