@@ -26,12 +26,6 @@ import idios
 from idios.utils import get_profile_model, get_profile_base
 
 
-if "notification" in settings.INSTALLED_APPS:
-    from notification import models as notification
-else:
-    notification = None
-
-
 def group_and_bridge(kwargs):
     """
     Given kwargs from the view (with view specific keys popped) pull out the
