@@ -1,10 +1,11 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
+import json
+
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.utils import simplejson as json
 
 from django.contrib.auth.models import User
 
