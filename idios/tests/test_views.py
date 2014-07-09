@@ -11,11 +11,11 @@
 
 
 # class TestViews(TestCase):
-    
+
 #     def setup(self):
 #         User.objects.create(username="bob")
 #         User.objects.create(username="joe")
-    
+
 #     def test_profiles(self):
 #         response = self.client.get(reverse("profile_list"))
 #         self.assertEqual(response.template.name, "idios/profiles.html")
@@ -23,14 +23,14 @@
 #             [str(p) for p in response.context["profiles"]],
 #             ["bob", "joe"]
 #         )
-    
+
 #     def test_profile(self):
 #         response = self.client.get(
 #             reverse("profile_detail", kwargs={"username": "joe"})
 #         )
 #         self.assertEqual(response.template.name, "idios/profile.html")
 #         self.assertEqual(str(response.context["profile"]), "joe")
-    
+
 #     def test_edit_profile(self):
 #         logged_in = self.client.login(username="joe", password="test")
 #         self.assert_(logged_in)
@@ -44,7 +44,7 @@
 #             SimpleProfile.objects.get(user__username="joe").name,
 #             "Joe Doe"
 #         )
-    
+
 #     def test_nonexistent_profile_slug_returns_404(self):
 #         logged_in = self.client.login(username="joe", password="test")
 #         self.assert_(logged_in)
@@ -59,11 +59,11 @@
 #         "IDIOS_PROFILE_MODULES": ["tests.SecretIdentityProfile"],
 #         "IDIOS_PROFILE_BASE": "tests.SecretIdentityProfile"
 #     }
-    
+
 #     def setup(self):
 #         User.objects.create(username="bob")
 #         User.objects.create(username="joe")
-    
+
 #     def test_non_default_profiles(self):
 #         profile = SecretIdentityProfile.objects.create(
 #             user=User.objects.get(username="joe"),
@@ -75,7 +75,7 @@
 #         self.assertEqual(response.template.name, "idios/profiles.html")
 #         self.assertEqual(len(response.context["profiles"]), 1)
 #         self.assertEqual(response.context["profiles"][0], profile)
-    
+
 #     def test_all_profiles(self):
 #         profile1 = SecretIdentityProfile.objects.create(
 #             user=User.objects.get(username="joe"),
@@ -92,7 +92,7 @@
 #             [p.super_power for p in response.context["profiles"]],
 #             ["x-ray vision", "cackling"]
 #         )
-    
+
 #     def test_alternative_profile(self):
 #         profile = SecretIdentityProfile.objects.create(
 #             user=User.objects.get(username="joe"),
@@ -109,7 +109,7 @@
 #             response.context["profile"].super_power,
 #             "x-ray vision"
 #         )
-    
+
 #     def test_edit_profile(self):
 #         logged_in = self.client.login(username="joe", password="test")
 #         self.assert_(logged_in)
@@ -122,7 +122,7 @@
 #         profile = SimpleProfile.objects.get(user__username="joe")
 #         self.assertRedirects(response, "/profiles/simpleprofile/profile/%s/" % profile.pk)
 #         self.assertEqual(profile.name, "Joe Doe")
-    
+
 #     def test_edit_alternative_profile(self):
 #         profile = SecretIdentityProfile.objects.create(
 #             user=User.objects.get(username="joe"),
@@ -139,7 +139,7 @@
 #             SecretIdentityProfile.objects.get(user__username="joe").super_power,
 #             "night vision"
 #         )
-    
+
 #     def test_create_profile(self):
 #         logged_in = self.client.login(username="joe", password="test")
 #         self.assert_(logged_in)

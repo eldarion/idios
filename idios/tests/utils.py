@@ -7,7 +7,7 @@ from ..conf import settings
 class SettingsTestCase(TestCase):
     setting_overrides = {}
     NOT_FOUND = object()
-    
+
     def _pre_setup(self):
         self._original_settings = {}
         for k,v in self.setting_overrides.items():
@@ -17,7 +17,7 @@ class SettingsTestCase(TestCase):
             else:
                 setattr(settings, k, v)
         super(SettingsTestCase, self)._pre_setup()
-    
+
     def _post_teardown(self):
         super(SettingsTestCase, self)._post_teardown()
         for k,v in self._original_settings.items():
@@ -31,7 +31,7 @@ class SettingsTestCase(TestCase):
 #     def _pre_setup(self):
 #         super(IdiosSettingsTestCase, self)._pre_setup()
 #         idios.settings = idios.IdiosSettings()
-    
+
 #     def _post_teardown(self):
 #         super(IdiosSettingsTestCase, self)._post_teardown()
 #         idios.settings = idios.IdiosSettings()

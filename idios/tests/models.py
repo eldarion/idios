@@ -4,7 +4,7 @@ from idios.models import ProfileBase
 
 
 class SimpleProfile(ProfileBase):
-    
+
     name = models.CharField(max_length=100)
 
 
@@ -14,5 +14,5 @@ class SecretIdentityProfile(ProfileBase):
 
 
 class SecretVillainProfile(SecretIdentityProfile):
-    
+
     fiendish_plot = models.CharField(max_length=100)

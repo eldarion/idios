@@ -12,25 +12,25 @@ from .utils import get_profile_model, get_profile_form
 
 
 class ClassProperty(property):
-    
+
     def __get__(self, cls, owner):
         return self.fget.__get__(None, owner)()
 
 
 class ProfileBase(models.Model):
-    
+
     # @@@ could be unique=True if subclasses don't inherit a concrete base class
     # @@@ need to look at this more
     user = models.ForeignKey(User, verbose_name=_("user"))
-    
+
     class Meta:
         verbose_name = _("profile")
         verbose_name_plural = _("profiles")
         abstract = True
-    
+
     def __unicode__(self):
         return self.user.username
-    
+
     def get_absolute_url(self):
         if len(settings.IDIOS_PROFILE_MODULES) > 1:
             # @@@ using PK here is kind of ugly. the alternative is to
@@ -45,14 +45,14 @@ class ProfileBase(models.Model):
             else:
                 kwargs = {"pk": self.pk}
         return reverse("profile_detail", kwargs=kwargs)
-    
+
     @classmethod
     def get_form(cls):
         return get_profile_form(cls)
-    
+
     def _default_profile_slug(cls):
         return cls._meta.module_name
-    
+
     profile_slug = ClassProperty(classmethod(_default_profile_slug))
 
 

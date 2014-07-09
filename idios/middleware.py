@@ -10,7 +10,7 @@ from .conf import settings
 
 
 class AdditionalInfoMiddleware(object):
-    
+
     def process_request(self, request):
         exemptions = [
             r"^%s" % settings.MEDIA_URL,
