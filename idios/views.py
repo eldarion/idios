@@ -4,25 +4,14 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from django.contrib.auth.models import User
 
-try:
-    from django.views.generic import ListView, DetailView, CreateView, UpdateView
-except ImportError:
-    try:
-        from cbv import ListView, DetailView, CreateView, UpdateView
-    except ImportError:
-        raise ImportError(
-            "It appears you are running a version of Django < "
-            "1.3. To use idios with this version of Django, install "
-            "django-cbv==0.1.5."
-        )
-
 from account.mixins import LoginRequiredMixin
 
-import idios
-from idios.utils import get_profile_model, get_profile_base
+from .conf import settings
+from .utils import get_profile_model, get_profile_base
 
 
 class ProfileListView(ListView):
@@ -89,7 +78,7 @@ class ProfileDetailView(DetailView):
         if profile_class is None:
             raise Http404
         
-        if idios.settings.USE_USERNAME:
+        if settings.IDIOS_USE_USERNAME:
             self.page_user = get_object_or_404(User, username=self.kwargs["username"])
             profile = get_object_or_404(profile_class, user=self.page_user)
         else:

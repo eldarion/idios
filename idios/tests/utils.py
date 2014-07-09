@@ -1,7 +1,6 @@
-from django.conf import settings
 from django.test import TestCase
 
-import idios
+from ..conf import settings
 
 
 # this would make a lovely context manager, but... 2.4 :(
@@ -28,11 +27,11 @@ class SettingsTestCase(TestCase):
                 setattr(settings, k, v)
 
 
-class IdiosSettingsTestCase(SettingsTestCase):
-    def _pre_setup(self):
-        super(IdiosSettingsTestCase, self)._pre_setup()
-        idios.settings = idios.IdiosSettings()
+# class IdiosSettingsTestCase(SettingsTestCase):
+#     def _pre_setup(self):
+#         super(IdiosSettingsTestCase, self)._pre_setup()
+#         idios.settings = idios.IdiosSettings()
     
-    def _post_teardown(self):
-        super(IdiosSettingsTestCase, self)._post_teardown()
-        idios.settings = idios.IdiosSettings()
+#     def _post_teardown(self):
+#         super(IdiosSettingsTestCase, self)._post_teardown()
+#         idios.settings = idios.IdiosSettings()

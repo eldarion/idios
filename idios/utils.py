@@ -8,11 +8,10 @@ modified for Eldarion standards.
 
 """
 from django import forms
-from django.db.models import get_model
 
 from django.contrib.auth.models import SiteProfileNotAvailable
 
-import idios
+from .conf import settings
 
 
 def get_profile_base():
@@ -35,11 +34,10 @@ def get_profile_base():
     raise ``django.contrib.auth.models.SiteProfileNotAvailable``.
     
     """
-    if idios.settings.MULTIPLE_PROFILES and idios.settings.PROFILE_BASE:
-        module = idios.settings.PROFILE_BASE
+    if len(settings.IDIOS_PROFILE_MODULES) > 1 and settings.IDIOS_PROFILE_BASE:
+        model = settings.IDIOS_PROFILE_BASE
     else:
-        module = idios.settings.DEFAULT_PROFILE_MODULE
-    model = get_model(*module.split("."))
+        model = settings.IDIOS_PROFILE_MODULES[0]
     if model is None:
         raise SiteProfileNotAvailable
     return model
@@ -60,20 +58,17 @@ def get_profile_model(profile_slug=None):
     ``django.contrib.auth.models.SiteProfileNotAvailable``.
     
     """
-    if profile_slug is None:
-        module = idios.settings.DEFAULT_PROFILE_MODULE
-        if module is None:
-            raise SiteProfileNotAvailable
-        model = get_model(*module.split("."))
+    model = None
+    if profile_slug is None and len(settings.IDIOS_PROFILE_MODULES) > 0:
+        model = settings.IDIOS_PROFILE_MODULES[0]
         if model is None:
             raise SiteProfileNotAvailable
     else:
-        for module in idios.settings.PROFILE_MODULES:
-            model = get_model(*module.split("."))
+        for model in settings.IDIOS_PROFILE_MODULES:
             if model and profile_slug == model.profile_slug:
                 break
-            else:
-                model = None
+    if model is None:
+        raise SiteProfileNotAvailable
     return model
 
 

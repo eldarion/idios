@@ -1,11 +1,12 @@
 import re
 
 from django import forms
-from django.conf import settings
 from django.db import models
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.views.decorators.csrf import csrf_protect
+
+from .conf import settings
 
 
 class AdditionalInfoMiddleware(object):

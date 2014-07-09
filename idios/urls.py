@@ -1,14 +1,13 @@
 from django.conf.urls import patterns, url
 
-import idios
-from idios.views import ProfileListView, ProfileDetailView, ProfileUpdateView, ProfileCreateView
+from .conf import settings
+from .views import ProfileListView, ProfileDetailView, ProfileUpdateView, ProfileCreateView
 
 
-if not idios.settings.USE_USERNAME:
-    profile_detail_default = url(r"^profile/(?P<pk>\d+)/$", ProfileDetailView.as_view(), name="profile_detail")
-else:
+if settings.IDIOS_USE_USERNAME:
     profile_detail_default = url(r"^profile/(?P<username>[\w\._-]+)/$", ProfileDetailView.as_view(), name="profile_detail")
-
+else:
+    profile_detail_default = url(r"^profile/(?P<pk>\d+)/$", ProfileDetailView.as_view(), name="profile_detail")
 
 urlpatterns = patterns("idios.views",
     
