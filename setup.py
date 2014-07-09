@@ -13,6 +13,9 @@ setup(
     long_description = open("README.rst").read(),
     license = "BSD",
     url = "http://github.com/eldarion/idios",
+    install_requires = [
+        "django-user-accounts>=1.0c9"
+    ],
     packages = [
         "idios",
         "idios.templatetags",

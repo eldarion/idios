@@ -5,14 +5,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
 
+from account.signals import user_logged_in
+
 import idios
 
 from idios.utils import get_profile_model, get_profile_form
-
-try:
-    from pinax.apps.account.signals import user_logged_in
-except ImportError:
-    user_logged_in = None
 
 
 class ClassProperty(property):
@@ -70,5 +67,4 @@ post_save.connect(create_profile, sender=User)
 def additional_info_kickstart(sender, **kwargs):
     request = kwargs.get("request")
     request.session["idios_additional_info_kickstart"] = True
-if user_logged_in: # protect against Pinax not being available
-    user_logged_in.connect(additional_info_kickstart)
+user_logged_in.connect(additional_info_kickstart)

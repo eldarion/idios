@@ -5,9 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils import simplejson as json
-from django.utils.decorators import method_decorator
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
 try:
@@ -21,6 +19,8 @@ except ImportError:
             "1.3. To use idios with this version of Django, install "
             "django-cbv==0.1.5."
         )
+
+from account.mixins import LoginRequiredMixin
 
 import idios
 from idios.utils import get_profile_model, get_profile_base
@@ -118,7 +118,7 @@ class ProfileDetailView(DetailView):
         return ctx
 
 
-class ProfileCreateView(CreateView):
+class ProfileCreateView(LoginRequiredMixin, CreateView):
     
     template_name = "idios/profile_create.html"
     template_name_ajax = "idios/profile_create_ajax.html"
@@ -157,13 +157,9 @@ class ProfileCreateView(CreateView):
         if self.success_url:
             return self.success_url
         return self.object.get_absolute_url()
-    
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(ProfileCreateView, self).dispatch(*args, **kwargs)
 
 
-class ProfileUpdateView(UpdateView):
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     
     template_name = "idios/profile_edit.html"
     template_name_ajax = "idios/profile_edit_ajax.html"
@@ -228,11 +224,3 @@ class ProfileUpdateView(UpdateView):
         if self.success_url:
             return self.success_url
         return self.object.get_absolute_url()
-    
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        try:
-            return super(ProfileUpdateView, self).dispatch(*args, **kwargs)
-        except:
-            import sys, traceback
-            traceback.print_exc()
