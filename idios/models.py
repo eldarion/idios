@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 
 from account.signals import user_logged_in
 
-from .conf import settings
 from .utils import get_profile_model, get_profile_form
 
 
@@ -32,6 +31,7 @@ class ProfileBase(models.Model):
         return self.user.username
 
     def get_absolute_url(self):
+        from .conf import settings
         if len(settings.IDIOS_PROFILE_MODULES) > 1:
             # @@@ using PK here is kind of ugly. the alternative is to
             # generate a unique slug for each profile, which is tricky

@@ -11,8 +11,6 @@ from django import forms
 
 from django.contrib.auth.models import SiteProfileNotAvailable
 
-from .conf import settings
-
 
 def get_profile_base():
     """
@@ -34,6 +32,7 @@ def get_profile_base():
     raise ``django.contrib.auth.models.SiteProfileNotAvailable``.
 
     """
+    from .conf import settings
     if len(settings.IDIOS_PROFILE_MODULES) > 1 and settings.IDIOS_PROFILE_BASE:
         model = settings.IDIOS_PROFILE_BASE
     else:
@@ -58,6 +57,7 @@ def get_profile_model(profile_slug=None):
     ``django.contrib.auth.models.SiteProfileNotAvailable``.
 
     """
+    from .conf import settings
     model = None
     if profile_slug is None and len(settings.IDIOS_PROFILE_MODULES) > 0:
         model = settings.IDIOS_PROFILE_MODULES[0]
