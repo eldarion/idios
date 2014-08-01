@@ -99,12 +99,12 @@ Here is what how your profile model might look like:
 .. code-block:: python
 
     from django.db import models
-    
+
     from idios.models import ProfileBase
-    
-    
+
+
     class Profile(ProfileBase):
-        
+
         name = models.CharField(max_length=100)
         phone_number = models.CharField(max_length=20)
 
