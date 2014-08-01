@@ -16,7 +16,7 @@ class AdditionalInfoMiddleware(object):
             r"^%s" % settings.MEDIA_URL,
             r"^%s" % settings.STATIC_URL,
             r"^/__debug__",
-            r"^/account", # @@@ hack for now
+            r"^/account",  # @@@ hack for now
         ]
         for exemption in exemptions:
             if re.match(exemption, request.path):

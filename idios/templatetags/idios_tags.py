@@ -12,7 +12,7 @@ def show_profile(user):
 @register.simple_tag
 def clear_search_url(request):
     GET = request.GET.copy()
-    if "search" in getvars:
+    if "search" in GET:
         del GET["search"]
     if len(GET.keys()) > 0:
         return "%s?%s" % (request.path, GET.urlencode())

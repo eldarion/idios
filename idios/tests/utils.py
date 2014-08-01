@@ -10,7 +10,7 @@ class SettingsTestCase(TestCase):
 
     def _pre_setup(self):
         self._original_settings = {}
-        for k,v in self.setting_overrides.items():
+        for k, v in self.setting_overrides.items():
             self._original_settings[k] = getattr(settings, k, self.NOT_FOUND)
             if v is self.NOT_FOUND:
                 delattr(settings, k)
@@ -20,7 +20,7 @@ class SettingsTestCase(TestCase):
 
     def _post_teardown(self):
         super(SettingsTestCase, self)._post_teardown()
-        for k,v in self._original_settings.items():
+        for k, v in self._original_settings.items():
             if v is self.NOT_FOUND:
                 delattr(settings, k)
             else:

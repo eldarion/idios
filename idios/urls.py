@@ -9,7 +9,8 @@ if settings.IDIOS_USE_USERNAME:
 else:
     profile_detail_default = url(r"^profile/(?P<pk>\d+)/$", ProfileDetailView.as_view(), name="profile_detail")
 
-urlpatterns = patterns("idios.views",
+urlpatterns = patterns(
+    "idios.views",
 
     url(r"^$", ProfileListView.as_view(), name="profile_list"),
     url(r"^all/$", ProfileListView.as_view(all_profiles=True), name="profile_list_all"),
